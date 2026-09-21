@@ -1,0 +1,99 @@
+.example-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.game-header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.game-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.game-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.score-display {
+  text-align: center;
+}
+
+.score-display h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.score-display p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.game-button {
+  padding: 20px 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+  background: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.game-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.game-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #e0e0e0;
+}
+
+.completion-message {
+  text-align: center;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.completion-message p {
+  font-size: 1.3rem;
+  margin: 10px 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
