@@ -12,6 +12,10 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    hmr: {
+      host: '722429802e61dce9dfd9-pod-ltwkkvjudzbd3gzinspevhypvy-3000.us1.cursorvm.com',
+      protocol: 'wss',
+    },
   },
   build: {
     outDir: 'dist',
