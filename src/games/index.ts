@@ -1,7 +1,17 @@
 import { GameConfig } from '../types/game';
 import ExampleGame from './ExampleGame/ExampleGame';
+import GemHunt from './GemHunt/GemHunt';
 
 export const GAMES: GameConfig[] = [
+  {
+    id: 'gem-hunt',
+    title: 'Gem Hunt',
+    description: 'Answer math questions to earn moves and collect gems in this platformer adventure!',
+    component: GemHunt,
+    category: 'Educational Math',
+    minAge: 5,
+    maxAge: 11,
+  },
   {
     id: 'example-game',
     title: 'Example Game',
