@@ -5,9 +5,10 @@ import QuestionPhase from './components/QuestionPhase';
 import { useGameSession } from './hooks/useGameSession';
 import { notifyGameComplete } from './services/postMessage';
 import { GAME_CONSTANTS } from './game/config';
+import { TOTAL_LEVELS, getLevel } from './game/levels';
 import './GemHunt.css';
 
-type Phase = 'boot' | 'questions' | 'platform' | 'gameOver';
+type Phase = 'boot' | 'questions' | 'platform' | 'levelComplete' | 'victory' | 'gameOver';
 
 const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const session = useGameSession();
@@ -16,10 +17,13 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const [lives, setLives] = useState(GAME_CONSTANTS.STARTING_LIVES);
   const [movesRemaining, setMovesRemaining] = useState(0);
   const [totalSuns, setTotalSuns] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [completedLevelName, setCompletedLevelName] = useState('');
   const livesRef = useRef(lives);
   const movesRef = useRef(movesRemaining);
   const sunsRef = useRef(totalSuns);
-  const enteredRef = useRef(false);
+  const levelRef = useRef(currentLevel);
+  const platformSunsBaseRef = useRef(0);
   const hydratedSessionId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -34,6 +38,10 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     sunsRef.current = totalSuns;
   }, [totalSuns]);
 
+  useEffect(() => {
+    levelRef.current = currentLevel;
+  }, [currentLevel]);
+
   // Hydrate once per session id (covers local start + later auth upgrade)
   useEffect(() => {
     if (!session.ready) return;
@@ -45,10 +53,11 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     if (hydratedSessionId.current === session.sessionId) return;
 
     hydratedSessionId.current = session.sessionId;
-    enteredRef.current = true;
     setLives(session.lives);
     setMovesRemaining(session.movesRemaining);
     setTotalSuns(session.totalGems);
+    platformSunsBaseRef.current = session.totalGems;
+    setCurrentLevel(Math.min(Math.max(1, session.currentLevel || 1), TOTAL_LEVELS));
     setQuestionKey((k) => k + 1);
     setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
   }, [
@@ -58,6 +67,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     session.lives,
     session.movesRemaining,
     session.totalGems,
+    session.currentLevel,
   ]);
 
   const endGame = () => {
@@ -73,6 +83,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
         livesRemaining: livesRef.current,
         movesRemaining: 0,
         totalGems: sunsRef.current,
+        currentLevel: levelRef.current,
         completed: true,
       });
     }
@@ -92,10 +103,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
     const nextMoves = movesRef.current + movesEarned;
     setMovesRemaining(nextMoves);
+    platformSunsBaseRef.current = sunsRef.current;
     void session.syncProgress({
       movesRemaining: nextMoves,
       livesRemaining: livesRef.current,
       totalGems: sunsRef.current,
+      currentLevel: levelRef.current,
     });
     setPhase('platform');
   };
@@ -107,7 +120,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
       livesRemaining: next,
       movesRemaining: movesRef.current,
       totalGems: sunsRef.current,
+      currentLevel: levelRef.current,
     });
+
+    if (next <= 0) {
+      endGame();
+    }
   };
 
   const handleMovesExhausted = () => {
@@ -116,6 +134,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
       movesRemaining: 0,
       livesRemaining: livesRef.current,
       totalGems: sunsRef.current,
+      currentLevel: levelRef.current,
     });
 
     if (livesRef.current <= 0) {
@@ -128,22 +147,70 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   };
 
   const handleSunsCollected = (count: number) => {
-    const next = Math.max(sunsRef.current, count);
+    const next = platformSunsBaseRef.current + count;
     setTotalSuns(next);
+    sunsRef.current = next;
     onScore?.(next);
     void session.syncProgress({
       totalGems: next,
       movesRemaining: movesRef.current,
       livesRemaining: livesRef.current,
+      currentLevel: levelRef.current,
     });
+  };
+
+  const handleLevelComplete = (payload: { level: number; suns: number }) => {
+    const levelDef = getLevel(payload.level);
+    setCompletedLevelName(levelDef.theme.name);
+
+    const nextSuns = platformSunsBaseRef.current + payload.suns;
+    setTotalSuns(nextSuns);
+    sunsRef.current = nextSuns;
+
+    if (payload.level >= TOTAL_LEVELS) {
+      setPhase('victory');
+      onComplete?.();
+      if (session.sessionId) {
+        notifyGameComplete({
+          sessionId: session.sessionId,
+          totalGems: nextSuns,
+          lives: livesRef.current,
+        });
+        void session.syncProgress({
+          livesRemaining: livesRef.current,
+          movesRemaining: movesRef.current,
+          totalGems: nextSuns,
+          currentLevel: TOTAL_LEVELS,
+          completed: true,
+        });
+      }
+      return;
+    }
+
+    const nextLevel = payload.level + 1;
+    setCurrentLevel(nextLevel);
+    levelRef.current = nextLevel;
+    setMovesRemaining(0);
+    setPhase('levelComplete');
+    void session.syncProgress({
+      currentLevel: nextLevel,
+      movesRemaining: 0,
+      livesRemaining: livesRef.current,
+      totalGems: nextSuns,
+    });
+  };
+
+  const continueAfterLevel = () => {
+    setQuestionKey((k) => k + 1);
+    setPhase('questions');
   };
 
   const handlePlayAgain = async () => {
     hydratedSessionId.current = null;
-    enteredRef.current = false;
     setLives(GAME_CONSTANTS.STARTING_LIVES);
     setMovesRemaining(0);
     setTotalSuns(0);
+    setCurrentLevel(1);
     await session.startFreshSession();
     setQuestionKey((k) => k + 1);
     setPhase('questions');
@@ -171,7 +238,6 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
             type="button"
             className="game-over-btn"
             onClick={() => {
-              // Fall back to offline local session
               window.location.href = window.location.pathname;
             }}
           >
@@ -189,11 +255,48 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
           <h2>Game Over</h2>
           <p>You ran out of lives.</p>
           <p>Suns collected: {totalSuns}</p>
+          <p>Reached level {currentLevel}</p>
           {session.mode === 'authenticated' && (
             <p className="game-over-meta">Session saved</p>
           )}
           <button type="button" className="game-over-btn" onClick={() => void handlePlayAgain()}>
             Play again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === 'victory') {
+    return (
+      <div className="gem-hunt">
+        <div className="game-over">
+          <h2>You did it!</h2>
+          <p>All {TOTAL_LEVELS} environments cleared.</p>
+          <p>Suns collected: {totalSuns}</p>
+          {session.mode === 'authenticated' && (
+            <p className="game-over-meta">Session saved</p>
+          )}
+          <button type="button" className="game-over-btn" onClick={() => void handlePlayAgain()}>
+            Play again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === 'levelComplete') {
+    const next = getLevel(currentLevel);
+    return (
+      <div className="gem-hunt">
+        <div className="game-over">
+          <h2>{completedLevelName} cleared!</h2>
+          <p>
+            Next up: Level {next.id} — {next.theme.name}
+          </p>
+          <p>Answer questions to earn moves for the longer run ahead.</p>
+          <button type="button" className="game-over-btn" onClick={continueAfterLevel}>
+            Continue
           </button>
         </div>
       </div>
@@ -223,9 +326,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
       {phase === 'platform' && (
         <PlatformPhase
+          levelNumber={currentLevel}
           movesRemaining={movesRemaining}
           onMovesExhausted={handleMovesExhausted}
           onSunsCollected={handleSunsCollected}
+          onLifeLost={handleLifeLost}
+          onLevelComplete={handleLevelComplete}
         />
       )}
     </div>
