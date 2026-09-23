@@ -1,21 +1,80 @@
 .gem-hunt {
   width: 100%;
   min-height: 100vh;
-  background-color: #2c3e50;
+  background-color: #f6f4ef;
   overflow: hidden;
+  font-family: "National Park", ui-sans-serif, system-ui, sans-serif;
 }
 
-.questions-phase {
+.session-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  padding: 0.55rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #9a3412;
+  background: #fff1d6;
+  border-bottom: 1px solid #f5d9a8;
+}
+
+.game-boot,
+.game-over {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  color: white;
+  gap: 0.75rem;
+  padding: 1.5rem;
   text-align: center;
+  color: #1c1917;
+  background-color: #f6f4ef;
+  background-image:
+    radial-gradient(ellipse 90% 50% at 110% -8%, #fde8ee 0%, transparent 55%),
+    radial-gradient(ellipse 70% 40% at -15% 8%, #fff3d1 0%, transparent 50%);
 }
 
-.questions-phase h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.game-boot img {
+  width: 64px;
+  height: 64px;
+}
+
+.game-boot h2,
+.game-over h2 {
+  margin: 0;
+  font-size: 2.4rem;
+  letter-spacing: -0.03em;
+}
+
+.game-boot p,
+.game-over p {
+  margin: 0;
+  color: #57534e;
+}
+
+.game-over-meta {
+  font-size: 0.85rem;
+  color: #f75074 !important;
+  font-weight: 600;
+}
+
+.game-over-btn {
+  margin-top: 1rem;
+  min-height: 3rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: #f75074;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(247, 80, 116, 0.28);
+}
+
+.game-over-btn:hover {
+  background: #e03d61;
 }

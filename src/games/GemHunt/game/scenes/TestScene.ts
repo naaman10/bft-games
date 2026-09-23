@@ -13,6 +13,7 @@ export class TestScene extends Phaser.Scene {
   private movesText!: Phaser.GameObjects.Text;
   private gemsText!: Phaser.GameObjects.Text;
   private wasMoving = false;
+  private exhaustedEmitted = false;
 
   constructor() {
     super({ key: 'TestScene' });
@@ -45,6 +46,11 @@ export class TestScene extends Phaser.Scene {
   }
 
   create() {
+    const registryMoves = this.registry.get('movesRemaining');
+    this.movesRemaining =
+      typeof registryMoves === 'number' ? registryMoves : 25;
+    this.exhaustedEmitted = false;
+
     this.createBackground();
     this.createAnimations();
     this.createPlatforms();
@@ -64,6 +70,10 @@ export class TestScene extends Phaser.Scene {
       undefined,
       this
     );
+
+    if (this.movesRemaining <= 0) {
+      this.emitMovesExhausted();
+    }
 
     console.log('TestScene created — Sunny Land sprites loaded');
   }
@@ -304,6 +314,7 @@ export class TestScene extends Phaser.Scene {
 
     this.gemsCollected += 1;
     this.gemsText.setText(`Suns: ${this.gemsCollected}`);
+    this.game.events.emit('suns-collected', this.gemsCollected);
 
     const fx = this.add.sprite(x, y, 'item-feedback').setScale(1.5).setDepth(5);
     fx.play('item-pop');
@@ -327,6 +338,14 @@ export class TestScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setScrollFactor(0)
         .setDepth(20);
+
+      this.time.delayedCall(900, () => this.emitMovesExhausted());
     }
+  }
+
+  private emitMovesExhausted() {
+    if (this.exhaustedEmitted) return;
+    this.exhaustedEmitted = true;
+    this.game.events.emit('moves-exhausted');
   }
 }

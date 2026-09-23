@@ -2,7 +2,7 @@ export interface GameConfig {
   id: string;
   title: string;
   description: string;
-  component: React.ComponentType;
+  component: React.ComponentType<GameProps>;
   thumbnail?: string;
   category?: string;
   minAge?: number;

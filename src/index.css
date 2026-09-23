@@ -1,8 +1,24 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --bft-background: #f6f4ef;
+  --bft-foreground: #1c1917;
+  --bft-card: #ffffff;
+  --bft-muted: #57534e;
+  --bft-accent: #f75074;
+  --bft-accent-hover: #e03d61;
+  --bft-accent-soft: #fde8ee;
+  --bft-ring: #fbb6c5;
+  --bft-border: #e7e5e4;
+  --bft-error: #b91c1c;
+  --bft-error-bg: #fef2f2;
+  --bft-peach: #fff1d6;
+  --bft-mint: #e4f6ee;
+  --bft-shadow-card: 0 10px 30px rgba(28, 25, 23, 0.06);
+  --bft-font: "National Park", ui-sans-serif, system-ui, sans-serif;
+
+  font-family: var(--bft-font);
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light dark;
+  color: var(--bft-foreground);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -14,8 +30,19 @@ body {
   display: flex;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bft-background);
 }
 
 #root {
   width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--bft-ring);
+  outline-offset: 3px;
+}
+
+button,
+input {
+  font-family: inherit;
 }

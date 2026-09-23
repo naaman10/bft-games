@@ -1,6 +1,6 @@
 -- Gem Hunt Database Schema
 -- PostgreSQL / Neon Database
--- Migration: 007_gem_hunt_tables.sql
+-- Migration: 009_gem_hunt_tables.sql
 --
 -- IMPORTANT: This schema integrates with existing BFT system
 -- All tables prefixed with gem_hunt_ to avoid conflicts
@@ -10,6 +10,10 @@
 
 -- Enable UUID extension (may already exist)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Clean up misnamed tables from a previous failed apply of this migration
+DROP TABLE IF EXISTS question_responses CASCADE;
+DROP TABLE IF EXISTS question_bank CASCADE;
 
 -- Game sessions table
 CREATE TABLE IF NOT EXISTS gem_hunt_sessions (
@@ -27,9 +31,9 @@ CREATE TABLE IF NOT EXISTS gem_hunt_sessions (
     completed_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX idx_gem_hunt_sessions_student ON gem_hunt_sessions(student_id);
-CREATE INDEX idx_gem_hunt_sessions_active ON gem_hunt_sessions(student_id, completed) WHERE completed = FALSE;
-CREATE INDEX idx_gem_hunt_sessions_year_subject ON gem_hunt_sessions(year_group, subject);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_sessions_student ON gem_hunt_sessions(student_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_sessions_active ON gem_hunt_sessions(student_id, completed) WHERE completed = FALSE;
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_sessions_year_subject ON gem_hunt_sessions(year_group, subject);
 
 -- Level progress table
 CREATE TABLE IF NOT EXISTS gem_hunt_level_progress (
@@ -50,9 +54,9 @@ CREATE TABLE IF NOT EXISTS gem_hunt_level_progress (
     UNIQUE(student_id, year_group, subject, level_number, session_id)
 );
 
-CREATE INDEX idx_gem_hunt_progress_student ON gem_hunt_level_progress(student_id);
-CREATE INDEX idx_gem_hunt_progress_year_subject ON gem_hunt_level_progress(student_id, year_group, subject);
-CREATE INDEX idx_gem_hunt_progress_completed ON gem_hunt_level_progress(completed, completed_at);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_progress_student ON gem_hunt_level_progress(student_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_progress_year_subject ON gem_hunt_level_progress(student_id, year_group, subject);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_progress_completed ON gem_hunt_level_progress(completed, completed_at);
 
 -- Leaderboard table
 CREATE TABLE IF NOT EXISTS gem_hunt_leaderboard (
@@ -69,17 +73,17 @@ CREATE TABLE IF NOT EXISTS gem_hunt_leaderboard (
     UNIQUE(student_id, year_group, subject)
 );
 
-CREATE INDEX idx_gem_hunt_leaderboard_ranking ON gem_hunt_leaderboard(year_group, subject, total_gems DESC);
-CREATE INDEX idx_gem_hunt_leaderboard_student ON gem_hunt_leaderboard(student_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_leaderboard_ranking ON gem_hunt_leaderboard(year_group, subject, total_gems DESC);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_leaderboard_student ON gem_hunt_leaderboard(student_id);
 
--- Question bank table
-CREATE TABLE IF NOT EXISTS question_bank (
+-- Question bank table (must exist before responses FK)
+CREATE TABLE IF NOT EXISTS gem_hunt_questions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     year_group VARCHAR(50) NOT NULL,
     subject VARCHAR(100) NOT NULL,
     question_text TEXT NOT NULL,
     correct_answer VARCHAR(255) NOT NULL,
-    alternative_answers TEXT[], -- Array of acceptable alternative answers
+    alternative_answers TEXT[],
     hint TEXT,
     explanation TEXT,
     difficulty_level INT DEFAULT 1 CHECK (difficulty_level BETWEEN 1 AND 3),
@@ -90,12 +94,12 @@ CREATE TABLE IF NOT EXISTS question_bank (
     active BOOLEAN DEFAULT TRUE
 );
 
-CREATE INDEX idx_questions_year_subject ON question_bank(year_group, subject, active);
-CREATE INDEX idx_questions_difficulty ON question_bank(difficulty_level);
-CREATE INDEX idx_questions_active ON question_bank(active) WHERE active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_questions_year_subject ON gem_hunt_questions(year_group, subject, active);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_questions_difficulty ON gem_hunt_questions(difficulty_level);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_questions_active ON gem_hunt_questions(active) WHERE active = TRUE;
 
 -- Question responses table
-CREATE TABLE IF NOT EXISTS question_responses (
+CREATE TABLE IF NOT EXISTS gem_hunt_question_responses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     session_id UUID NOT NULL REFERENCES gem_hunt_sessions(id) ON DELETE CASCADE,
     question_id UUID NOT NULL REFERENCES gem_hunt_questions(id) ON DELETE CASCADE,
@@ -105,9 +109,9 @@ CREATE TABLE IF NOT EXISTS question_responses (
     answered_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_gem_hunt_responses_session ON gem_hunt_question_responses(session_id);
-CREATE INDEX idx_gem_hunt_responses_question ON gem_hunt_question_responses(question_id);
-CREATE INDEX idx_gem_hunt_responses_correctness ON gem_hunt_question_responses(is_correct);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_responses_session ON gem_hunt_question_responses(session_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_responses_question ON gem_hunt_question_responses(question_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_responses_correctness ON gem_hunt_question_responses(is_correct);
 
 -- Achievements table (optional for future)
 CREATE TABLE IF NOT EXISTS gem_hunt_achievements (
@@ -115,7 +119,7 @@ CREATE TABLE IF NOT EXISTS gem_hunt_achievements (
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     icon_url VARCHAR(500),
-    requirement_type VARCHAR(50) NOT NULL, -- 'gems', 'levels', 'streak', etc.
+    requirement_type VARCHAR(50) NOT NULL,
     requirement_value INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -129,11 +133,10 @@ CREATE TABLE IF NOT EXISTS gem_hunt_student_achievements (
     UNIQUE(student_id, achievement_id)
 );
 
-CREATE INDEX idx_gem_hunt_student_achievements ON gem_hunt_student_achievements(student_id);
+CREATE INDEX IF NOT EXISTS idx_gem_hunt_student_achievements ON gem_hunt_student_achievements(student_id);
 
 -- Functions and Triggers
 
--- Update updated_at timestamp (existing function, reuse if available)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -142,13 +145,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply trigger to gem_hunt_questions table
-CREATE TRIGGER update_gem_hunt_questions_updated_at 
+DROP TRIGGER IF EXISTS update_gem_hunt_questions_updated_at ON gem_hunt_questions;
+CREATE TRIGGER update_gem_hunt_questions_updated_at
     BEFORE UPDATE ON gem_hunt_questions
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Function to update Gem Hunt leaderboard
 CREATE OR REPLACE FUNCTION update_gem_hunt_leaderboard_entry(
     p_student_id UUID,
     p_year_group VARCHAR,
@@ -161,10 +163,10 @@ CREATE OR REPLACE FUNCTION update_gem_hunt_leaderboard_entry(
 RETURNS VOID AS $$
 BEGIN
     INSERT INTO gem_hunt_leaderboard (
-        student_id, 
-        year_group, 
-        subject, 
-        total_gems, 
+        student_id,
+        year_group,
+        subject,
+        total_gems,
         highest_level,
         total_games_played,
         total_time_played_seconds,
@@ -193,7 +195,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Function to get random Gem Hunt questions
 CREATE OR REPLACE FUNCTION get_gem_hunt_random_questions(
     p_year_group VARCHAR,
     p_subject VARCHAR,
@@ -209,7 +210,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         qb.id,
         qb.question_text,
         qb.year_group,
@@ -225,20 +226,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Function to increment Gem Hunt question statistics
 CREATE OR REPLACE FUNCTION update_gem_hunt_question_stats()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE gem_hunt_questions
-    SET 
+    SET
         times_asked = times_asked + 1,
         times_correct = times_correct + CASE WHEN NEW.is_correct THEN 1 ELSE 0 END
     WHERE id = NEW.question_id;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_gem_hunt_question_statistics ON gem_hunt_question_responses;
 CREATE TRIGGER update_gem_hunt_question_statistics
     AFTER INSERT ON gem_hunt_question_responses
     FOR EACH ROW
@@ -246,9 +247,8 @@ CREATE TRIGGER update_gem_hunt_question_statistics
 
 -- Views
 
--- Leaderboard view with student details
 CREATE OR REPLACE VIEW gem_hunt_leaderboard_with_students AS
-SELECT 
+SELECT
     l.id,
     l.student_id,
     s.name as student_name,
@@ -265,9 +265,8 @@ SELECT
 FROM gem_hunt_leaderboard l
 JOIN students s ON l.student_id = s.id;
 
--- Student progress summary view
 CREATE OR REPLACE VIEW gem_hunt_student_progress_summary AS
-SELECT 
+SELECT
     s.id as student_id,
     s.name as student_name,
     lp.year_group,
@@ -278,34 +277,41 @@ SELECT
     SUM(lp.questions_answered) as total_questions,
     SUM(lp.questions_correct) as total_correct,
     ROUND(
-        CASE 
-            WHEN SUM(lp.questions_answered) > 0 
+        CASE
+            WHEN SUM(lp.questions_answered) > 0
             THEN (SUM(lp.questions_correct)::DECIMAL / SUM(lp.questions_answered) * 100)
-            ELSE 0 
-        END, 
+            ELSE 0
+        END,
         2
     ) as accuracy_percentage
 FROM students s
 LEFT JOIN gem_hunt_level_progress lp ON s.id = lp.student_id AND lp.completed = TRUE
 GROUP BY s.id, s.name, lp.year_group, lp.subject;
 
--- Sample data inserts
-
 -- Sample questions for Year 6 Percentages
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, difficulty_level) VALUES
-('Year 6', 'Percentages', 'What is 25% of 80?', '20', 1),
-('Year 6', 'Percentages', 'What is 50% of 120?', '60', 1),
-('Year 6', 'Percentages', 'What is 10% of 200?', '20', 1),
-('Year 6', 'Percentages', 'What is 75% of 40?', '30', 2),
-('Year 6', 'Percentages', 'What is 20% of 150?', '30', 1),
-('Year 6', 'Percentages', 'What is 30% of 100?', '30', 1),
-('Year 6', 'Percentages', 'What is 15% of 80?', '12', 2),
-('Year 6', 'Percentages', 'What is 60% of 50?', '30', 2),
-('Year 6', 'Percentages', 'What is 5% of 200?', '10', 1),
-('Year 6', 'Percentages', 'What is 40% of 75?', '30', 2)
-ON CONFLICT DO NOTHING;
+INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, difficulty_level)
+SELECT v.year_group, v.subject, v.question_text, v.correct_answer, v.difficulty_level
+FROM (
+    VALUES
+        ('Year 6', 'Percentages', 'What is 25% of 80?', '20', 1),
+        ('Year 6', 'Percentages', 'What is 50% of 120?', '60', 1),
+        ('Year 6', 'Percentages', 'What is 10% of 200?', '20', 1),
+        ('Year 6', 'Percentages', 'What is 75% of 40?', '30', 2),
+        ('Year 6', 'Percentages', 'What is 20% of 150?', '30', 1),
+        ('Year 6', 'Percentages', 'What is 30% of 100?', '30', 1),
+        ('Year 6', 'Percentages', 'What is 15% of 80?', '12', 2),
+        ('Year 6', 'Percentages', 'What is 60% of 50?', '30', 2),
+        ('Year 6', 'Percentages', 'What is 5% of 200?', '10', 1),
+        ('Year 6', 'Percentages', 'What is 40% of 75?', '30', 2)
+) AS v(year_group, subject, question_text, correct_answer, difficulty_level)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM gem_hunt_questions q
+    WHERE q.year_group = v.year_group
+      AND q.subject = v.subject
+      AND q.question_text = v.question_text
+);
 
--- Comments
 COMMENT ON TABLE gem_hunt_sessions IS 'Gem Hunt: Tracks individual game sessions with progress';
 COMMENT ON TABLE gem_hunt_level_progress IS 'Gem Hunt: Records student progress for each level';
 COMMENT ON TABLE gem_hunt_leaderboard IS 'Gem Hunt: Aggregated leaderboard rankings by year/subject';
