@@ -20,6 +20,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const movesRef = useRef(movesRemaining);
   const sunsRef = useRef(totalSuns);
   const enteredRef = useRef(false);
+  const hydratedSessionId = useRef<string | null>(null);
 
   useEffect(() => {
     livesRef.current = lives;
@@ -33,20 +34,31 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     sunsRef.current = totalSuns;
   }, [totalSuns]);
 
-  // Hydrate local play state once session bootstrap completes
+  // Hydrate once per session id (covers local start + later auth upgrade)
   useEffect(() => {
-    if (!session.ready || enteredRef.current) return;
+    if (!session.ready) return;
     if (session.mode === 'error') {
       setPhase('boot');
       return;
     }
+    if (!session.sessionId) return;
+    if (hydratedSessionId.current === session.sessionId) return;
 
+    hydratedSessionId.current = session.sessionId;
     enteredRef.current = true;
     setLives(session.lives);
     setMovesRemaining(session.movesRemaining);
     setTotalSuns(session.totalGems);
+    setQuestionKey((k) => k + 1);
     setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
-  }, [session.ready, session.mode, session.lives, session.movesRemaining, session.totalGems]);
+  }, [
+    session.ready,
+    session.mode,
+    session.sessionId,
+    session.lives,
+    session.movesRemaining,
+    session.totalGems,
+  ]);
 
   const endGame = () => {
     setPhase('gameOver');
@@ -127,12 +139,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   };
 
   const handlePlayAgain = async () => {
+    hydratedSessionId.current = null;
     enteredRef.current = false;
     setLives(GAME_CONSTANTS.STARTING_LIVES);
     setMovesRemaining(0);
     setTotalSuns(0);
     await session.startFreshSession();
-    enteredRef.current = true;
     setQuestionKey((k) => k + 1);
     setPhase('questions');
   };

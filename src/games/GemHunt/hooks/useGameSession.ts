@@ -9,6 +9,7 @@ import {
 } from '../services/api';
 import {
   isAllowedParentOrigin,
+  isEmbeddedInParent,
   notifyGameReady,
   notifyProgress,
   type InitGamePayload,
@@ -231,7 +232,10 @@ export function useGameSession(): GameBootstrap {
     bootstrapped.current = true;
 
     const handleMessage = (event: MessageEvent) => {
-      if (!isAllowedParentOrigin(event.origin)) return;
+      if (!isAllowedParentOrigin(event.origin)) {
+        console.warn('Ignored message from origin:', event.origin);
+        return;
+      }
       const data = event.data as ParentToGameMessage | undefined;
       if (!data || typeof data !== 'object' || !('type' in data)) return;
 
@@ -257,8 +261,15 @@ export function useGameSession(): GameBootstrap {
     const query = readQueryBootstrap();
     if (query.token) {
       void applyAuthPayload(query as InitGamePayload);
+    } else if (isEmbeddedInParent()) {
+      // Wait for Learn's INIT_GAME before falling back to local play
+      window.setTimeout(() => {
+        if (!tokenRef.current) {
+          console.warn('No INIT_GAME received from parent; starting local play');
+          startLocal();
+        }
+      }, 3000);
     } else {
-      // Solo/local play — no JWT required
       startLocal();
     }
 

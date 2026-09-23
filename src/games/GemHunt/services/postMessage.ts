@@ -36,6 +36,7 @@ export type GameToParentMessage =
 const DEFAULT_ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'https://localhost:3000',
   'https://learn.brighterfuturestutoring.com',
 ];
 
@@ -47,18 +48,60 @@ function allowedOrigins(): string[] {
 }
 
 export function isAllowedParentOrigin(origin: string): boolean {
-  if (import.meta.env.DEV && origin === window.location.origin) {
-    return true;
+  if (!origin) return false;
+  if (allowedOrigins().includes(origin)) return true;
+  // Allow Neon/Vercel Learn preview hosts during testing
+  try {
+    const host = new URL(origin).hostname;
+    return (
+      host === 'localhost' ||
+      host.endsWith('.vercel.app') ||
+      host.endsWith('brighterfuturestutoring.com')
+    );
+  } catch {
+    return false;
   }
-  return allowedOrigins().includes(origin);
 }
 
-export function postToParent(message: GameToParentMessage) {
-  if (window.parent === window) return;
+export function isEmbeddedInParent(): boolean {
+  try {
+    return window.parent !== window;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Notify the Learn parent. GAME_READY uses "*" so localhost / preview
+ * hosts still receive it; later messages prefer a known Learn origin.
+ */
+export function postToParent(
+  message: GameToParentMessage,
+  targetOrigin?: string
+) {
+  if (!isEmbeddedInParent()) return;
+
+  if (message.type === 'GAME_READY') {
+    window.parent.postMessage(message, '*');
+    return;
+  }
 
   const origins = allowedOrigins();
-  // Prefer a configured Learn origin; fall back to wildcard only in local iframe tests
-  const target = origins.find((o) => o.includes('brighterfutures')) || '*';
+  const preferred =
+    targetOrigin ||
+    origins.find((o) => o.includes('brighterfutures')) ||
+    document.referrer ||
+    '*';
+
+  let target = '*';
+  try {
+    target = preferred.startsWith('http')
+      ? new URL(preferred).origin
+      : preferred;
+  } catch {
+    target = '*';
+  }
+
   window.parent.postMessage(message, target);
 }
 
