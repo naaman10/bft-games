@@ -6,7 +6,8 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
   width: 800,
   height: 600,
   parent: 'phaser-game-container',
-  backgroundColor: '#87CEEB', // Sky blue
+  backgroundColor: '#87CEEB',
+  pixelArt: true,
   physics: {
     default: 'arcade',
     arcade: {
@@ -21,15 +22,19 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
   },
 };
 
+/** Foxy is 33×32; rendered at 2× for readability. */
 export const PLAYER_CONFIG = {
   SPEED: 200,
-  JUMP_VELOCITY: -400,
-  WIDTH: 32,
-  HEIGHT: 48,
+  // Peak height ≈ v²/(2g) ≈ 189px with gravity 800
+  JUMP_VELOCITY: -550,
+  WIDTH: 66,
+  HEIGHT: 64,
+  SCALE: 2,
 };
 
 export const GAME_CONSTANTS = {
-  TILE_SIZE: 32,
+  TILE_SIZE: 16,
+  PLATFORM_SCALE: 2,
   MOVES_PER_CORRECT_ANSWER: 5,
   STARTING_LIVES: 5,
   GRAVITY: 800,
