@@ -3,29 +3,36 @@ import { GameProps } from '../../types/game';
 import PlatformPhase from './components/PlatformPhase';
 import QuestionPhase from './components/QuestionPhase';
 import SubjectSelector from './components/SubjectSelector';
+import StartScreen from './components/StartScreen';
 import { useGameSession } from './hooks/useGameSession';
 import { notifyGameComplete } from './services/postMessage';
 import { GAME_CONSTANTS } from './game/config';
 import { TOTAL_LEVELS, getLevel } from './game/levels';
 import './GemHunt.css';
 
-type Phase = 'boot' | 'questions' | 'platform' | 'levelComplete' | 'victory' | 'gameOver';
+type Phase = 'start' | 'selectSubject' | 'boot' | 'questions' | 'platform' | 'levelComplete' | 'victory' | 'gameOver';
 
 const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const session = useGameSession();
-  const [phase, setPhase] = useState<Phase>('boot');
+  const [phase, setPhase] = useState<Phase>('start');
   const [questionKey, setQuestionKey] = useState(0);
   const [lives, setLives] = useState(GAME_CONSTANTS.STARTING_LIVES);
   const [movesRemaining, setMovesRemaining] = useState(0);
   const [totalSuns, setTotalSuns] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [completedLevelName, setCompletedLevelName] = useState('');
+  const [showStartScreen, setShowStartScreen] = useState(true);
   const livesRef = useRef(lives);
   const movesRef = useRef(movesRemaining);
   const sunsRef = useRef(totalSuns);
   const levelRef = useRef(currentLevel);
   const platformSunsBaseRef = useRef(0);
   const hydratedSessionId = useRef<string | null>(null);
+  
+  // Check for saved session
+  const hasSavedSession = Boolean(
+    typeof window !== 'undefined' && localStorage.getItem('gemHunt_lastSession')
+  );
 
   useEffect(() => {
     livesRef.current = lives;
@@ -43,6 +50,16 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     levelRef.current = currentLevel;
   }, [currentLevel]);
 
+  // Check if we should skip start screen (embedded or has params)
+  useEffect(() => {
+    if (!session.ready) return;
+    
+    // Skip start screen if embedded with auth or has query params
+    if (session.mode === 'authenticated' || !session.needsSelection) {
+      setShowStartScreen(false);
+    }
+  }, [session.ready, session.mode, session.needsSelection]);
+
   // Hydrate once per session id (covers local start + later auth upgrade)
   useEffect(() => {
     if (!session.ready) return;
@@ -52,6 +69,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     }
     if (!session.sessionId) return;
     if (hydratedSessionId.current === session.sessionId) return;
+    if (showStartScreen && phase === 'start') return; // Don't hydrate until past start screen
 
     hydratedSessionId.current = session.sessionId;
     setLives(session.lives);
@@ -59,6 +77,15 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     platformSunsBaseRef.current = session.totalGems;
     setCurrentLevel(Math.min(Math.max(1, session.currentLevel || 1), TOTAL_LEVELS));
     setQuestionKey((k) => k + 1);
+
+    // Save session info for "Continue" feature
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gemHunt_lastSession', JSON.stringify({
+        yearGroup: session.yearGroup,
+        subject: session.subject,
+        timestamp: Date.now(),
+      }));
+    }
 
     if (session.mode === 'local') {
       setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
@@ -76,6 +103,10 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     session.movesRemaining,
     session.totalGems,
     session.currentLevel,
+    session.yearGroup,
+    session.subject,
+    showStartScreen,
+    phase,
   ]);
 
   const endGame = () => {
@@ -351,6 +382,47 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     // Clear all query params and reload to show selector
     window.location.href = window.location.pathname;
   };
+
+  const handleNewGame = () => {
+    setShowStartScreen(false);
+    setPhase('selectSubject');
+  };
+
+  const handleContinue = () => {
+    setShowStartScreen(false);
+    
+    // Load last session from localStorage
+    const lastSession = localStorage.getItem('gemHunt_lastSession');
+    if (lastSession) {
+      const { yearGroup, subject } = JSON.parse(lastSession);
+      void session.startWithSelection(yearGroup, subject);
+    } else {
+      // No saved session, go to selector
+      setPhase('selectSubject');
+    }
+  };
+
+  // Show start screen first (unless embedded/authenticated)
+  if (showStartScreen && phase === 'start' && session.ready) {
+    return (
+      <div className="gem-hunt">
+        <StartScreen 
+          onNewGame={handleNewGame}
+          onContinue={handleContinue}
+          hasSavedSession={hasSavedSession}
+        />
+      </div>
+    );
+  }
+
+  // Show subject selector if needed
+  if (phase === 'selectSubject' || (session.needsSelection && !showStartScreen)) {
+    return (
+      <div className="gem-hunt">
+        <SubjectSelector onSelect={session.startWithSelection} />
+      </div>
+    );
+  }
 
   return (
     <div className="gem-hunt">
