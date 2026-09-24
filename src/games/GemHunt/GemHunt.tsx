@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { GameProps } from '../../types/game';
 import PlatformPhase from './components/PlatformPhase';
 import QuestionPhase from './components/QuestionPhase';
+import SubjectSelector from './components/SubjectSelector';
 import { useGameSession } from './hooks/useGameSession';
 import { notifyGameComplete } from './services/postMessage';
 import { GAME_CONSTANTS } from './game/config';
@@ -244,6 +245,15 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setQuestionKey((k) => k + 1);
     setPhase('questions');
   };
+
+  // Show subject selector if needed
+  if (session.needsSelection) {
+    return (
+      <div className="gem-hunt">
+        <SubjectSelector onSelect={session.startWithSelection} />
+      </div>
+    );
+  }
 
   if (!session.ready || (phase === 'boot' && session.mode !== 'error')) {
     return (

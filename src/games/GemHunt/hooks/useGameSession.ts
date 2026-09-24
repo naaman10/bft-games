@@ -31,9 +31,11 @@ export type GameBootstrap = {
   currentLevel: number;
   error: string | null;
   ready: boolean;
+  needsSelection: boolean;
   syncProgress: (updates: SessionProgressUpdate) => Promise<void>;
   startFreshSession: () => Promise<void>;
   applyAuthPayload: (payload: InitGamePayload) => Promise<void>;
+  startWithSelection: (yearGroup: string, subject: string) => Promise<void>;
 };
 
 const DEFAULT_YEAR = 'Year 6';
@@ -86,6 +88,7 @@ export function useGameSession(): GameBootstrap {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [needsSelection, setNeedsSelection] = useState(false);
 
   const tokenRef = useRef<string | null>(null);
   const sessionIdRef = useRef<string | null>(null);
@@ -161,6 +164,23 @@ export function useGameSession(): GameBootstrap {
     setMode('local');
     setReady(true);
   }, [applySession]);
+
+  const startWithSelection = useCallback(
+    (selectedYear: string, selectedSubject: string) => {
+      setYearGroup(selectedYear);
+      setSubject(selectedSubject);
+      setNeedsSelection(false);
+
+      // Start local session with selected year/subject
+      const local = toLocalSession(selectedYear, selectedSubject);
+      applySession(local);
+      setToken(null);
+      tokenRef.current = null;
+      setMode('local');
+      setReady(true);
+    },
+    [applySession]
+  );
 
   const startFreshSession = useCallback(async () => {
     const currentToken = tokenRef.current;
@@ -270,8 +290,17 @@ export function useGameSession(): GameBootstrap {
           startLocal();
         }
       }, 3000);
-    } else {
+    } else if (query.yearGroup || query.subject) {
+      // Has partial params from URL, use them
+      const selectedYear = query.yearGroup || DEFAULT_YEAR;
+      const selectedSubject = query.subject || DEFAULT_SUBJECT;
+      setYearGroup(selectedYear);
+      setSubject(selectedSubject);
       startLocal();
+    } else {
+      // No params - show selection screen
+      setNeedsSelection(true);
+      setReady(true);
     }
 
     return () => {
@@ -292,8 +321,10 @@ export function useGameSession(): GameBootstrap {
     currentLevel,
     error,
     ready,
+    needsSelection,
     syncProgress,
     startFreshSession,
     applyAuthPayload,
+    startWithSelection,
   };
 }
