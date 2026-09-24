@@ -82,16 +82,16 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
     if (session.mode === 'local') {
       setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
-      // Only auto-start if we've passed the start screen
-      if (!showStartScreen || phase !== 'start') {
+      // Only auto-start if we've passed the start screen AND not in subject selection
+      if (phase !== 'start' && phase !== 'selectSubject' && !showStartScreen) {
         setPhase('platform');
       }
       return;
     }
 
     setMovesRemaining(session.movesRemaining);
-    // Only auto-start if we've passed the start screen
-    if (!showStartScreen || phase !== 'start') {
+    // Only auto-start if we've passed the start screen AND not in subject selection
+    if (phase !== 'start' && phase !== 'selectSubject' && !showStartScreen) {
       setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
     }
   }, [
