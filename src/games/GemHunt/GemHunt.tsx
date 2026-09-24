@@ -114,9 +114,20 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   useEffect(() => {
     const wasNeeded = prevNeedsSelection.current;
     const nowNotNeeded = !session.needsSelection;
+    
+    console.log('[GemHunt] Selection effect:', {
+      phase,
+      wasNeeded,
+      nowNotNeeded,
+      needsSelection: session.needsSelection,
+      ready: session.ready,
+      willTransition: phase === 'selectSubject' && wasNeeded && nowNotNeeded && session.ready
+    });
+    
     prevNeedsSelection.current = session.needsSelection;
 
     if (phase === 'selectSubject' && wasNeeded && nowNotNeeded && session.ready) {
+      console.log('[GemHunt] Transitioning from selector to game');
       setPhase('platform');
     }
   }, [phase, session.needsSelection, session.ready]);

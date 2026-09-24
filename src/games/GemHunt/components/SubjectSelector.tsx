@@ -33,7 +33,9 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({ onSelect }) => {
   };
 
   const handleStart = () => {
+    console.log('[SubjectSelector] Start button clicked:', { selectedYear, selectedSubject });
     onSelect(selectedYear, selectedSubject);
+    console.log('[SubjectSelector] onSelect called');
   };
 
   return (

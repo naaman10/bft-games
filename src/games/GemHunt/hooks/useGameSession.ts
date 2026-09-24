@@ -167,9 +167,11 @@ export function useGameSession(): GameBootstrap {
 
   const startWithSelection = useCallback(
     async (selectedYear: string, selectedSubject: string) => {
+      console.log('[useGameSession] startWithSelection called:', { selectedYear, selectedSubject });
       setYearGroup(selectedYear);
       setSubject(selectedSubject);
       setNeedsSelection(false);
+      console.log('[useGameSession] Set needsSelection to false');
 
       // Start local session with selected year/subject
       const local = toLocalSession(selectedYear, selectedSubject);
@@ -178,6 +180,7 @@ export function useGameSession(): GameBootstrap {
       tokenRef.current = null;
       setMode('local');
       setReady(true);
+      console.log('[useGameSession] Session started with:', local);
     },
     [applySession]
   );
