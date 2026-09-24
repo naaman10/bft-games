@@ -68,11 +68,11 @@ function toLocalSession(
     id: `local-${crypto.randomUUID()}`,
     yearGroup,
     subject,
-    livesRemaining: GAME_CONSTANTS.STARTING_LIVES,
-    // Local play starts on the platform with unlimited moves for level testing
-    movesRemaining: GAME_CONSTANTS.UNLIMITED_MOVES,
-    totalGems: 0,
-    currentLevel: 1,
+  livesRemaining: GAME_CONSTANTS.STARTING_LIVES,
+  // Local play starts with 0 moves - must answer questions first
+  movesRemaining: 0,
+  totalGems: 0,
+  currentLevel: 1,
   };
 }
 

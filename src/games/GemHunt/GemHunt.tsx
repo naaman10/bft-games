@@ -80,17 +80,10 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
       }));
     }
 
-    if (session.mode === 'local') {
-      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
-      // Only auto-start if we've passed the start screen AND not in subject selection
-      if (phase !== 'start' && phase !== 'selectSubject' && !showStartScreen) {
-        setPhase('platform');
-      }
-      return;
-    }
-
     setMovesRemaining(session.movesRemaining);
-    // Only auto-start if we've passed the start screen AND not in subject selection
+    
+    // Auto-start if we've passed the start screen AND not in subject selection
+    // Start with questions if no moves, platform if moves available
     if (phase !== 'start' && phase !== 'selectSubject' && !showStartScreen) {
       setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
     }
@@ -235,7 +228,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     levelRef.current = nextLevel;
 
     if (session.mode === 'local') {
-      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      // In local mode, still track moves - player needs to answer questions
       platformSunsBaseRef.current = nextSuns;
       setPhase('levelComplete');
       return;
@@ -253,9 +246,9 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
   const continueAfterLevel = () => {
     if (session.mode === 'local') {
+      // In local mode, advance level but keep move tracking
       platformSunsBaseRef.current = sunsRef.current;
-      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
-      setPhase('platform');
+      setPhase(movesRemaining > 0 ? 'platform' : 'questions');
       return;
     }
     setQuestionKey((k) => k + 1);
@@ -269,9 +262,10 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setCurrentLevel(1);
     await session.startFreshSession();
     if (session.mode === 'local' || !session.token) {
-      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      // Reset for new game, start with questions
+      setMovesRemaining(0);
       platformSunsBaseRef.current = 0;
-      setPhase('platform');
+      setPhase('questions');
       return;
     }
     setMovesRemaining(0);
