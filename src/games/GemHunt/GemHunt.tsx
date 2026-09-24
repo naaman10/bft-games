@@ -50,17 +50,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     levelRef.current = currentLevel;
   }, [currentLevel]);
 
-  // Check if we should skip start screen (only skip if embedded)
-  useEffect(() => {
-    if (!session.ready) return;
-    
-    // Only skip start screen if we're embedded in parent app (iframe)
-    // Standalone access should always show start screen
-    const isEmbedded = window.parent !== window;
-    if (isEmbedded && session.mode === 'authenticated') {
-      setShowStartScreen(false);
-    }
-  }, [session.ready, session.mode]);
+  // Start screen always shows - no auto-skipping
+  // User must click "New Game" or "Continue" to proceed
 
   // Hydrate once per session id (covers local start + later auth upgrade)
   useEffect(() => {
