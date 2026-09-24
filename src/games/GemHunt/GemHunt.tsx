@@ -347,11 +347,23 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     );
   }
 
+  const handleChangeSubject = () => {
+    setPhase('boot');
+    void session.startFreshSession();
+    window.location.href = window.location.pathname; // Reload without params
+  };
+
   return (
     <div className="gem-hunt">
       {session.mode === 'local' && (
         <div className="session-banner" role="status">
           Local test — unlimited lives & moves
+          <button 
+            onClick={handleChangeSubject}
+            style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+          >
+            Change Subject
+          </button>
         </div>
       )}
 
