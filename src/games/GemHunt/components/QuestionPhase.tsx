@@ -43,6 +43,14 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
     (async () => {
       setLoading(true);
       setError(null);
+      
+      console.log('[QuestionPhase] Fetching questions:', { 
+        yearGroup, 
+        subject, 
+        hasToken: !!token,
+        sessionId 
+      });
+      
       try {
         const batch = await fetchQuestions({
           yearGroup,
@@ -51,12 +59,14 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
           token,
         });
         if (!cancelled) {
+          console.log('[QuestionPhase] Questions loaded:', batch.length);
           setQuestions(batch);
           setIndex(0);
           setMovesEarned(0);
         }
       } catch (err) {
         if (!cancelled) {
+          console.error('[QuestionPhase] Error loading questions:', err);
           setError(err instanceof Error ? err.message : 'Failed to load questions');
         }
       } finally {
@@ -67,7 +77,7 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [yearGroup, subject, token]);
+  }, [yearGroup, subject, token, sessionId]);
 
   const current = questions[index];
   const progressPct = questions.length

@@ -123,22 +123,35 @@ export async function fetchQuestions(options: {
 }): Promise<Question[]> {
   const { yearGroup, subject, count = 5, token } = options;
 
+  // Always use local questions in local mode (no token)
+  if (!token) {
+    console.log('[API] No token - using local questions');
+    return pickLocalQuestions(yearGroup, subject, count);
+  }
+
   try {
     const params = new URLSearchParams({
       yearGroup,
       subject,
       count: String(count),
     });
-    const data = (await apiFetch(`/gem-hunt/questions?${params}`, {
+    const url = `/gem-hunt/questions?${params}`;
+    console.log(`[API] Fetching questions from ${apiBase}${url}`);
+    
+    const data = (await apiFetch(url, {
       token,
     })) as { questions: Question[] };
 
     if (!data.questions?.length) {
+      console.error('[API] Empty questions response from server');
       throw new Error('Empty questions response');
     }
+    
+    console.log(`[API] Successfully fetched ${data.questions.length} questions from database`);
     return data.questions;
   } catch (err) {
-    console.warn('Using local question bank:', err);
+    console.error('[API] Failed to fetch from database:', err);
+    console.warn(`[API] Falling back to local question bank for ${yearGroup} ${subject}`);
     return pickLocalQuestions(yearGroup, subject, count);
   }
 }
