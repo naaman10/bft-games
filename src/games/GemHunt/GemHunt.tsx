@@ -108,6 +108,13 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     phase,
   ]);
 
+  // When subject is selected, transition from selector to game
+  useEffect(() => {
+    if (phase === 'selectSubject' && !session.needsSelection && session.ready) {
+      setPhase('platform');
+    }
+  }, [phase, session.needsSelection, session.ready]);
+
   const endGame = () => {
     setPhase('gameOver');
     onComplete?.();
