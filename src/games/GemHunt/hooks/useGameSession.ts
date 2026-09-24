@@ -166,7 +166,7 @@ export function useGameSession(): GameBootstrap {
   }, [applySession]);
 
   const startWithSelection = useCallback(
-    (selectedYear: string, selectedSubject: string) => {
+    async (selectedYear: string, selectedSubject: string) => {
       setYearGroup(selectedYear);
       setSubject(selectedSubject);
       setNeedsSelection(false);
