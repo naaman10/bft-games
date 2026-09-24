@@ -8,6 +8,10 @@ import {
 let apiBase =
   import.meta.env.VITE_BFT_API_URL?.replace(/\/$/, '') || 'http://localhost:4000';
 
+// Log API base URL on module load
+console.log('[API Config] Base URL:', apiBase);
+console.log('[API Config] Env variable:', import.meta.env.VITE_BFT_API_URL || 'not set');
+
 export type AnswerResult = {
   correct: boolean;
   correctAnswer: string;
