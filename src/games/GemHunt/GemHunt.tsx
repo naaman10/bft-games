@@ -348,19 +348,29 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   }
 
   const handleChangeSubject = () => {
-    setPhase('boot');
-    void session.startFreshSession();
-    window.location.href = window.location.pathname; // Reload without params
+    // Clear all query params and reload to show selector
+    window.location.href = window.location.pathname;
   };
 
   return (
     <div className="gem-hunt">
-      {session.mode === 'local' && (
+      {/* Always show banner with subject info and change button */}
+      {(phase === 'questions' || phase === 'platform') && session.ready && (
         <div className="session-banner" role="status">
-          Local test — unlimited lives & moves
+          {session.mode === 'local' && 'Local test — unlimited lives & moves • '}
+          {session.yearGroup} • {session.subject}
           <button 
             onClick={handleChangeSubject}
-            style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+            style={{ 
+              marginLeft: '1rem', 
+              padding: '0.25rem 0.75rem',
+              background: 'rgba(255,255,255,0.2)',
+              border: '1px solid rgba(255,255,255,0.4)',
+              borderRadius: '4px',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '0.85rem'
+            }}
           >
             Change Subject
           </button>
