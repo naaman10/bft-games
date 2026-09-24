@@ -67,7 +67,8 @@ function toLocalSession(
     yearGroup,
     subject,
     livesRemaining: GAME_CONSTANTS.STARTING_LIVES,
-    movesRemaining: 0,
+    // Local play starts on the platform with unlimited moves for level testing
+    movesRemaining: GAME_CONSTANTS.UNLIMITED_MOVES,
     totalGems: 0,
     currentLevel: 1,
   };

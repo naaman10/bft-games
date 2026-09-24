@@ -54,11 +54,18 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
     hydratedSessionId.current = session.sessionId;
     setLives(session.lives);
-    setMovesRemaining(session.movesRemaining);
     setTotalSuns(session.totalGems);
     platformSunsBaseRef.current = session.totalGems;
     setCurrentLevel(Math.min(Math.max(1, session.currentLevel || 1), TOTAL_LEVELS));
     setQuestionKey((k) => k + 1);
+
+    if (session.mode === 'local') {
+      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      setPhase('platform');
+      return;
+    }
+
+    setMovesRemaining(session.movesRemaining);
     setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
   }, [
     session.ready,
@@ -114,6 +121,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   };
 
   const handleLifeLost = () => {
+    if (session.mode === 'local') return;
+
     const next = Math.max(0, livesRef.current - 1);
     setLives(next);
     void session.syncProgress({
@@ -190,6 +199,14 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     const nextLevel = payload.level + 1;
     setCurrentLevel(nextLevel);
     levelRef.current = nextLevel;
+
+    if (session.mode === 'local') {
+      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      platformSunsBaseRef.current = nextSuns;
+      setPhase('levelComplete');
+      return;
+    }
+
     setMovesRemaining(0);
     setPhase('levelComplete');
     void session.syncProgress({
@@ -201,6 +218,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   };
 
   const continueAfterLevel = () => {
+    if (session.mode === 'local') {
+      platformSunsBaseRef.current = sunsRef.current;
+      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      setPhase('platform');
+      return;
+    }
     setQuestionKey((k) => k + 1);
     setPhase('questions');
   };
@@ -208,10 +231,16 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const handlePlayAgain = async () => {
     hydratedSessionId.current = null;
     setLives(GAME_CONSTANTS.STARTING_LIVES);
-    setMovesRemaining(0);
     setTotalSuns(0);
     setCurrentLevel(1);
     await session.startFreshSession();
+    if (session.mode === 'local' || !session.token) {
+      setMovesRemaining(GAME_CONSTANTS.UNLIMITED_MOVES);
+      platformSunsBaseRef.current = 0;
+      setPhase('platform');
+      return;
+    }
+    setMovesRemaining(0);
     setQuestionKey((k) => k + 1);
     setPhase('questions');
   };
@@ -287,6 +316,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
 
   if (phase === 'levelComplete') {
     const next = getLevel(currentLevel);
+    const isLocal = session.mode === 'local';
     return (
       <div className="gem-hunt">
         <div className="game-over">
@@ -294,7 +324,11 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
           <p>
             Next up: Level {next.id} — {next.theme.name}
           </p>
-          <p>Answer questions to earn moves for the longer run ahead.</p>
+          <p>
+            {isLocal
+              ? 'Local test mode — unlimited lives & moves.'
+              : 'Answer questions to earn moves for the longer run ahead.'}
+          </p>
           <button type="button" className="game-over-btn" onClick={continueAfterLevel}>
             Continue
           </button>
@@ -307,7 +341,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     <div className="gem-hunt">
       {session.mode === 'local' && (
         <div className="session-banner" role="status">
-          Local play — progress won’t sync until signed in via Learn
+          Local test — unlimited lives & moves
         </div>
       )}
 
@@ -328,6 +362,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
         <PlatformPhase
           levelNumber={currentLevel}
           movesRemaining={movesRemaining}
+          unlimited={session.mode === 'local'}
           onMovesExhausted={handleMovesExhausted}
           onSunsCollected={handleSunsCollected}
           onLifeLost={handleLifeLost}

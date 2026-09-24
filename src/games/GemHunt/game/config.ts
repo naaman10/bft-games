@@ -38,4 +38,6 @@ export const GAME_CONSTANTS = {
   MOVES_PER_CORRECT_ANSWER: 5,
   STARTING_LIVES: 5,
   GRAVITY: 800,
+  /** Display / registry sentinel when local play ignores move limits */
+  UNLIMITED_MOVES: 9999,
 };

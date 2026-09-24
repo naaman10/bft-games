@@ -6,6 +6,8 @@ import './PlatformPhase.css';
 interface PlatformPhaseProps {
   levelNumber: number;
   movesRemaining: number;
+  /** Local test mode: ignore move/life limits in the Phaser scene */
+  unlimited?: boolean;
   onMovesExhausted: () => void;
   onSunsCollected?: (count: number) => void;
   onLifeLost?: () => void;
@@ -15,6 +17,7 @@ interface PlatformPhaseProps {
 const PlatformPhase: React.FC<PlatformPhaseProps> = ({
   levelNumber,
   movesRemaining,
+  unlimited = false,
   onMovesExhausted,
   onSunsCollected,
   onLifeLost,
@@ -54,6 +57,7 @@ const PlatformPhase: React.FC<PlatformPhaseProps> = ({
 
     game.registry.set('movesRemaining', movesRemaining);
     game.registry.set('levelNumber', levelNumber);
+    game.registry.set('unlimitedResources', unlimited);
 
     const onExhausted = () => exhaustedRef.current();
     const onSuns = (count: number) => sunsRef.current?.(count);
@@ -74,7 +78,7 @@ const PlatformPhase: React.FC<PlatformPhaseProps> = ({
       game.destroy(true);
       gameRef.current = null;
     };
-  }, [movesRemaining, levelNumber]);
+  }, [movesRemaining, levelNumber, unlimited]);
 
   return (
     <div className="platform-phase">

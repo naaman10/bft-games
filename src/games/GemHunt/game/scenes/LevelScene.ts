@@ -29,6 +29,7 @@ export class LevelScene extends Phaser.Scene {
   private wasMoving = false;
   private exhaustedEmitted = false;
   private levelComplete = false;
+  private unlimited = false;
   private invulnerableUntil = 0;
   private checkpoint = { x: 80, y: 520 };
   private bg!: Phaser.GameObjects.TileSprite;
@@ -95,6 +96,7 @@ export class LevelScene extends Phaser.Scene {
     const registryMoves = this.registry.get('movesRemaining');
     this.movesRemaining =
       typeof registryMoves === 'number' ? registryMoves : 25;
+    this.unlimited = this.registry.get('unlimitedResources') === true;
     this.gemsCollected = 0;
     this.exhaustedEmitted = false;
     this.levelComplete = false;
@@ -163,7 +165,7 @@ export class LevelScene extends Phaser.Scene {
       this
     );
 
-    if (this.movesRemaining <= 0) {
+    if (!this.unlimited && this.movesRemaining <= 0) {
       this.emitMovesExhausted();
     }
   }
@@ -180,7 +182,7 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
 
-    if (this.movesRemaining <= 0) {
+    if (!this.unlimited && this.movesRemaining <= 0) {
       const body = this.player.body as Phaser.Physics.Arcade.Body;
       body.setVelocityX(0);
       this.player.anims.play('foxy-idle', true);
@@ -557,7 +559,7 @@ export class LevelScene extends Phaser.Scene {
       .setDepth(10);
 
     this.movesText = this.add
-      .text(16, 50, `Moves: ${this.movesRemaining}`, {
+      .text(16, 50, this.unlimited ? 'Moves: ∞' : `Moves: ${this.movesRemaining}`, {
         fontSize: '18px',
         color: '#ffffff',
         backgroundColor: '#000000',
@@ -670,7 +672,9 @@ export class LevelScene extends Phaser.Scene {
     if (this.time.now < this.invulnerableUntil) return;
 
     this.invulnerableUntil = this.time.now + 1500;
-    this.game.events.emit('life-lost');
+    if (!this.unlimited) {
+      this.game.events.emit('life-lost');
+    }
 
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(this.player.flipX ? 120 : -120, -280);
@@ -685,7 +689,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private deductMove() {
-    if (this.movesRemaining <= 0 || this.levelComplete) return;
+    if (this.unlimited || this.movesRemaining <= 0 || this.levelComplete) return;
 
     this.movesRemaining -= 1;
     this.movesText.setText(`Moves: ${this.movesRemaining}`);
