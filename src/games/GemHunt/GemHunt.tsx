@@ -108,29 +108,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     phase,
   ]);
 
-  // When subject is selected, transition from selector to game
-  // Only trigger when needsSelection changes from true to false while on selector screen
-  const prevNeedsSelection = useRef(session.needsSelection);
-  useEffect(() => {
-    const wasNeeded = prevNeedsSelection.current;
-    const nowNotNeeded = !session.needsSelection;
-    
-    console.log('[GemHunt] Selection effect:', {
-      phase,
-      wasNeeded,
-      nowNotNeeded,
-      needsSelection: session.needsSelection,
-      ready: session.ready,
-      willTransition: phase === 'selectSubject' && wasNeeded && nowNotNeeded && session.ready
-    });
-    
-    prevNeedsSelection.current = session.needsSelection;
-
-    if (phase === 'selectSubject' && wasNeeded && nowNotNeeded && session.ready) {
-      console.log('[GemHunt] Transitioning from selector to game');
-      setPhase('platform');
-    }
-  }, [phase, session.needsSelection, session.ready]);
+  // Phase transitions are now handled directly in button callbacks
+  // No need for complex effect-based detection
 
   const endGame = () => {
     setPhase('gameOver');
@@ -419,6 +398,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     if (lastSession) {
       const { yearGroup, subject } = JSON.parse(lastSession);
       void session.startWithSelection(yearGroup, subject);
+      // Immediately transition to platform phase
+      setPhase('platform');
     } else {
       // No saved session, go to selector
       setPhase('selectSubject');
@@ -442,7 +423,12 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   if (phase === 'selectSubject' || (session.needsSelection && !showStartScreen)) {
     return (
       <div className="gem-hunt">
-        <SubjectSelector onSelect={session.startWithSelection} />
+        <SubjectSelector onSelect={(year, subject) => {
+          console.log('[GemHunt] SubjectSelector onSelect wrapper called');
+          void session.startWithSelection(year, subject);
+          // Immediately transition to platform phase after selection
+          setPhase('platform');
+        }} />
       </div>
     );
   }
