@@ -109,8 +109,14 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   ]);
 
   // When subject is selected, transition from selector to game
+  // Only trigger when needsSelection changes from true to false while on selector screen
+  const prevNeedsSelection = useRef(session.needsSelection);
   useEffect(() => {
-    if (phase === 'selectSubject' && !session.needsSelection && session.ready) {
+    const wasNeeded = prevNeedsSelection.current;
+    const nowNotNeeded = !session.needsSelection;
+    prevNeedsSelection.current = session.needsSelection;
+
+    if (phase === 'selectSubject' && wasNeeded && nowNotNeeded && session.ready) {
       setPhase('platform');
     }
   }, [phase, session.needsSelection, session.ready]);
