@@ -63,14 +63,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     if (!session.sessionId) return;
     if (hydratedSessionId.current === session.sessionId) return;
     
-    // Skip start screen if signed in
-    const isSignedIn = session.token || session.mode === 'authenticated';
-    if (showStartScreen && phase === 'start' && !isSignedIn) return; // Don't hydrate until past start screen
-    
-    if (isSignedIn && showStartScreen) {
-      setShowStartScreen(false);
-      setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
-    }
+    // Don't hydrate until past start screen
+    if (phase === 'start') return;
 
     hydratedSessionId.current = session.sessionId;
     setLives(session.lives);
@@ -281,9 +275,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setPhase('questions');
   };
 
-  // Show subject selector if needed (but not if signed in)
-  const isSignedIn = session.token || session.mode === 'authenticated';
-  if (session.needsSelection && !isSignedIn) {
+  // Show subject selector if needed
+  if (session.needsSelection) {
     return (
       <div className="gem-hunt">
         <SubjectSelector onSelect={session.startWithSelection} />
@@ -401,16 +394,16 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     if (lastSession) {
       const { yearGroup, subject } = JSON.parse(lastSession);
       void session.startWithSelection(yearGroup, subject);
-      // Immediately transition to platform phase
-      setPhase('platform');
+      // Immediately transition to questions phase
+      setPhase('questions');
     } else {
       // No saved session, go to selector
       setPhase('selectSubject');
     }
   };
 
-  // Show start screen first (unless embedded/authenticated)
-  if (showStartScreen && phase === 'start' && session.ready && !isSignedIn) {
+  // Show start screen first
+  if (showStartScreen && phase === 'start' && session.ready) {
     return (
       <div className="gem-hunt">
         <StartScreen 
@@ -422,15 +415,15 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     );
   }
 
-  // Show subject selector if needed (but not if signed in)
-  if (!isSignedIn && (phase === 'selectSubject' || (session.needsSelection && !showStartScreen))) {
+  // Show subject selector if needed
+  if (phase === 'selectSubject' || (session.needsSelection && !showStartScreen)) {
     return (
       <div className="gem-hunt">
         <SubjectSelector onSelect={(year, subject) => {
           console.log('[GemHunt] SubjectSelector onSelect wrapper called');
           void session.startWithSelection(year, subject);
-          // Immediately transition to platform phase after selection
-          setPhase('platform');
+          // Immediately transition to questions phase after selection
+          setPhase('questions');
         }} />
       </div>
     );
