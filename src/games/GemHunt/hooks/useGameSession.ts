@@ -120,37 +120,34 @@ export function useGameSession(): GameBootstrap {
         setApiBaseUrl(payload.apiBaseUrl);
       }
 
-      const nextYear = payload.yearGroup || DEFAULT_YEAR;
-      const nextSubject = payload.subject || DEFAULT_SUBJECT;
+      // Store the token for later use
       setToken(payload.token);
       tokenRef.current = payload.token;
-      setYearGroup(nextYear);
-      setSubject(nextSubject);
       setError(null);
-      setNeedsSelection(false);
 
-      try {
-        let session: GemHuntSession;
-        if (payload.sessionId) {
-          session = await getSession({
+      // Only create session if sessionId is provided (resume case)
+      if (payload.sessionId) {
+        const nextYear = payload.yearGroup || DEFAULT_YEAR;
+        const nextSubject = payload.subject || DEFAULT_SUBJECT;
+        setYearGroup(nextYear);
+        setSubject(nextSubject);
+        
+        try {
+          const session = await getSession({
             sessionId: payload.sessionId,
             token: payload.token,
           });
-        } else {
-          session = await createSession({
-            yearGroup: nextYear,
-            subject: nextSubject,
-            token: payload.token,
-          });
+          applySession(session);
+          setMode('authenticated');
+          setReady(true);
+        } catch (err) {
+          console.error('Failed to bootstrap authenticated session:', err);
+          setError(err instanceof Error ? err.message : 'Session bootstrap failed');
+          setMode('error');
+          setReady(true);
         }
-
-        applySession(session);
-        setMode('authenticated');
-        setReady(true);
-      } catch (err) {
-        console.error('Failed to bootstrap authenticated session:', err);
-        setError(err instanceof Error ? err.message : 'Session bootstrap failed');
-        setMode('error');
+      } else {
+        // Token stored, let the start screen render
         setReady(true);
       }
     },
