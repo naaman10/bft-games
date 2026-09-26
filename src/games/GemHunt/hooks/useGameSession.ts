@@ -127,6 +127,7 @@ export function useGameSession(): GameBootstrap {
       setYearGroup(nextYear);
       setSubject(nextSubject);
       setError(null);
+      setNeedsSelection(false);
 
       try {
         let session: GemHuntSession;
@@ -172,6 +173,25 @@ export function useGameSession(): GameBootstrap {
       setSubject(selectedSubject);
       setNeedsSelection(false);
       console.log('[useGameSession] Set needsSelection to false');
+
+      // If we have a token, create an authenticated session
+      if (tokenRef.current) {
+        try {
+          const session = await createSession({
+            yearGroup: selectedYear,
+            subject: selectedSubject,
+            token: tokenRef.current,
+          });
+          applySession(session);
+          setMode('authenticated');
+          setReady(true);
+          console.log('[useGameSession] Authenticated session started with:', session);
+          return;
+        } catch (err) {
+          console.error('Failed to create authenticated session:', err);
+          // Fall through to local session
+        }
+      }
 
       // Start local session with selected year/subject
       const local = toLocalSession(selectedYear, selectedSubject);
@@ -287,6 +307,7 @@ export function useGameSession(): GameBootstrap {
       void applyAuthPayload(query as InitGamePayload);
     } else if (isEmbeddedInParent()) {
       // Wait for Learn's INIT_GAME before falling back to local play
+      setReady(false);
       window.setTimeout(() => {
         if (!tokenRef.current) {
           console.warn('No INIT_GAME received from parent; starting local play');
