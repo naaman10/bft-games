@@ -86,7 +86,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     
     // Auto-start if we've passed the start screen AND not in subject selection
     // Start with questions if no moves, platform if moves available
-    if (phase !== 'start' && phase !== 'selectSubject' && !showStartScreen) {
+    if (phase !== 'selectSubject' && !showStartScreen) {
       setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
     }
   }, [
