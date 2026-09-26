@@ -255,15 +255,25 @@ export function useGameSession(): GameBootstrap {
     if (bootstrapped.current) return;
     bootstrapped.current = true;
 
-    const handleMessage = (event: MessageEvent) => {
+     const handleMessage = (event: MessageEvent) => {
+      console.log('[useGameSession] Received postMessage:', {
+        type: event.data?.type,
+        origin: event.origin,
+        hasToken: !!event.data?.payload?.token,
+      });
+      
       if (!isAllowedParentOrigin(event.origin)) {
-        console.warn('Ignored message from origin:', event.origin);
+        console.warn('[useGameSession] Ignored message from origin:', event.origin);
         return;
       }
       const data = event.data as ParentToGameMessage | undefined;
-      if (!data || typeof data !== 'object' || !('type' in data)) return;
+      if (!data || typeof data !== 'object' || !('type' in data)) {
+        console.log('[useGameSession] Invalid message data');
+        return;
+      }
 
       if (data.type === 'INIT_GAME' && data.payload?.token) {
+        console.log('[useGameSession] INIT_GAME received with token! Calling applyAuthPayload');
         void applyAuthPayload(data.payload);
       }
 
