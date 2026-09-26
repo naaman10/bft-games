@@ -62,7 +62,15 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     }
     if (!session.sessionId) return;
     if (hydratedSessionId.current === session.sessionId) return;
-    if (showStartScreen && phase === 'start') return; // Don't hydrate until past start screen
+    
+    // Skip start screen if signed in
+    const isSignedIn = session.token || session.mode === 'authenticated';
+    if (showStartScreen && phase === 'start' && !isSignedIn) return; // Don't hydrate until past start screen
+    
+    if (isSignedIn && showStartScreen) {
+      setShowStartScreen(false);
+      setPhase(session.movesRemaining > 0 ? 'platform' : 'questions');
+    }
 
     hydratedSessionId.current = session.sessionId;
     setLives(session.lives);
@@ -273,8 +281,9 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setPhase('questions');
   };
 
-  // Show subject selector if needed
-  if (session.needsSelection) {
+  // Show subject selector if needed (but not if signed in)
+  const isSignedIn = session.token || session.mode === 'authenticated';
+  if (session.needsSelection && !isSignedIn) {
     return (
       <div className="gem-hunt">
         <SubjectSelector onSelect={session.startWithSelection} />
@@ -401,7 +410,7 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
   };
 
   // Show start screen first (unless embedded/authenticated)
-  if (showStartScreen && phase === 'start' && session.ready) {
+  if (showStartScreen && phase === 'start' && session.ready && !isSignedIn) {
     return (
       <div className="gem-hunt">
         <StartScreen 
@@ -413,8 +422,8 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     );
   }
 
-  // Show subject selector if needed
-  if (phase === 'selectSubject' || (session.needsSelection && !showStartScreen)) {
+  // Show subject selector if needed (but not if signed in)
+  if (!isSignedIn && (phase === 'selectSubject' || (session.needsSelection && !showStartScreen))) {
     return (
       <div className="gem-hunt">
         <SubjectSelector onSelect={(year, subject) => {
