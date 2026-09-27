@@ -91,13 +91,36 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
     // Optionally, also save directly to API if authenticated
     if (isAuthenticated && token && apiBaseUrl) {
       console.log('[MathsQuiz] Saving results to API:', apiBaseUrl);
-      fetch(`${apiBaseUrl}/quiz-generator/sessions`, {
+      
+      const sessionPayload = {
+        gameType: 'maths-quiz',
+        score: scorePercentage,
+        maxScore: 100,
+        timeElapsed: totalTime,
+        startedAt: startTime.toISOString(),
+        completedAt: new Date().toISOString(),
+        gameData: {
+          totalQuestions: quizAnswers.length,
+          correctAnswers: correctCount,
+          yearGroup: config?.yearGroup || authYearGroup || 'Year 6',
+          subject: config?.subject || authSubject || null,
+          difficulty: 'medium',
+          answers: quizAnswers.map(a => ({
+            questionId: a.questionId,
+            userAnswer: a.userAnswer,
+            correct: a.isCorrect,
+            timeSpent: a.timeTakenSeconds,
+          })),
+        },
+      };
+
+      fetch(`${apiBaseUrl}/api/games/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(results),
+        body: JSON.stringify(sessionPayload),
       })
         .then(res => res.json())
         .then(data => console.log('[MathsQuiz] Saved to API:', data))
