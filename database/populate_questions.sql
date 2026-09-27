@@ -1,9 +1,10 @@
--- Gem Hunt Question Bank Population
--- Run this after the main migration (009_gem_hunt_tables.sql)
--- Populates the gem_hunt_questions table with questions for Years 1-6
+-- Question Bank Population
+-- Run this after migrations 009 and 010
+-- Populates the questions table with questions for Years 1-6
+-- (Table renamed from gem_hunt_questions to questions in migration 010)
 
 -- Clear existing questions (optional - comment out if you want to keep existing)
--- TRUNCATE TABLE gem_hunt_questions;
+-- TRUNCATE TABLE questions;
 
 -- ============================================
 -- YEAR 1 QUESTIONS

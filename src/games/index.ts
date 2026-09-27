@@ -1,6 +1,7 @@
 import { GameConfig } from '../types/game';
 import ExampleGame from './ExampleGame/ExampleGame';
 import GemHunt from './GemHunt/GemHunt';
+import MathsQuiz from './MathsQuiz/MathsQuiz';
 
 export const GAMES: GameConfig[] = [
   {
@@ -11,6 +12,15 @@ export const GAMES: GameConfig[] = [
     category: 'Educational Math',
     minAge: 5,
     maxAge: 11,
+  },
+  {
+    id: 'maths-quiz',
+    title: 'Maths Quiz Generator',
+    description: 'Create custom maths quizzes with instant feedback. Choose your year group, subject, and number of questions!',
+    component: MathsQuiz,
+    category: 'Educational Math',
+    minAge: 5,
+    maxAge: 12,
   },
   {
     id: 'example-game',
