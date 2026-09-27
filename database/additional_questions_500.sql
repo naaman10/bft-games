@@ -7,7 +7,7 @@
 -- ============================================
 
 -- Year 1: Number Recognition (15 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 1', 'Numbers', 'What number comes after 7?', '8', ARRAY['eight'], 1, 'Count up', '8 comes after 7'),
 ('Year 1', 'Numbers', 'What number comes before 5?', '4', ARRAY['four'], 1, 'Count back', '4 comes before 5'),
 ('Year 1', 'Numbers', 'What number is between 8 and 10?', '9', ARRAY['nine'], 1, 'Think about counting', '9 is between 8 and 10'),
@@ -25,7 +25,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 1', 'Numbers', 'What is 2 more than 5?', '7', ARRAY['seven'], 1, 'Count up', '2 more than 5 is 7');
 
 -- Year 1: More Addition (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 1', 'Addition', 'What is 1 + 1?', '2', ARRAY['two'], 1, 'Count', '1 plus 1 equals 2'),
 ('Year 1', 'Addition', 'What is 1 + 2?', '3', ARRAY['three'], 1, 'Count from 1', '1 plus 2 equals 3'),
 ('Year 1', 'Addition', 'What is 1 + 3?', '4', ARRAY['four'], 1, 'Count up', '1 plus 3 equals 4'),
@@ -53,7 +53,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 1', 'Addition', 'What is 7 + 2?', '9', ARRAY['nine'], 1, 'Count up', '7 plus 2 equals 9');
 
 -- Year 1: More Subtraction (30 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 1', 'Subtraction', 'What is 3 - 1?', '2', ARRAY['two'], 1, 'Count back', '3 minus 1 equals 2'),
 ('Year 1', 'Subtraction', 'What is 3 - 2?', '1', ARRAY['one'], 1, 'Count back', '3 minus 2 equals 1'),
 ('Year 1', 'Subtraction', 'What is 4 - 1?', '3', ARRAY['three'], 1, 'Count back', '4 minus 1 equals 3'),
@@ -90,7 +90,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 -- ============================================
 
 -- Year 2: More Subtraction (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 2', 'Subtraction', 'What is 20 - 5?', '15', NULL, 1, 'Count back', '20 minus 5 equals 15'),
 ('Year 2', 'Subtraction', 'What is 30 - 10?', '20', ARRAY['twenty'], 1, 'Take away 10', '30 minus 10 equals 20'),
 ('Year 2', 'Subtraction', 'What is 25 - 12?', '13', NULL, 2, 'Use column method', '25 minus 12 equals 13'),
@@ -118,7 +118,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 2', 'Subtraction', 'What is 54 - 29?', '25', NULL, 3, 'Nearly 30', '54 minus 29 equals 25');
 
 -- Year 2: Division (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 2', 'Division', 'What is 4 ÷ 2?', '2', ARRAY['two'], 1, 'Half of 4', '4 divided by 2 equals 2'),
 ('Year 2', 'Division', 'What is 6 ÷ 2?', '3', ARRAY['three'], 1, 'Half of 6', '6 divided by 2 equals 3'),
 ('Year 2', 'Division', 'What is 8 ÷ 2?', '4', ARRAY['four'], 1, 'Half of 8', '8 divided by 2 equals 4'),
@@ -141,7 +141,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 2', 'Division', 'What is 6 ÷ 3?', '2', ARRAY['two'], 2, 'How many 3s?', '6 divided by 3 equals 2');
 
 -- Year 2: Money (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 2', 'Money', 'How many pence in 1 pound?', '100', NULL, 1, '100p = £1', 'There are 100 pence in 1 pound'),
 ('Year 2', 'Money', 'How many 10p coins make 50p?', '5', ARRAY['five'], 1, 'Count in 10s', '5 ten-pence coins make 50p'),
 ('Year 2', 'Money', 'How many 5p coins make 20p?', '4', ARRAY['four'], 2, 'Count in 5s', '4 five-pence coins make 20p'),
@@ -169,7 +169,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 2', 'Money', 'What is 48p + 2p?', '50', ARRAY['50p'], 1, 'Make 50p', '48p plus 2p equals 50p');
 
 -- Year 2: Number (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 2', 'Numbers', 'What is 10 more than 25?', '35', NULL, 1, 'Add 10', '10 more than 25 is 35'),
 ('Year 2', 'Numbers', 'What is 10 less than 40?', '30', ARRAY['thirty'], 1, 'Subtract 10', '10 less than 40 is 30'),
 ('Year 2', 'Numbers', 'What number comes after 49?', '50', ARRAY['fifty'], 1, 'Count up', '50 comes after 49'),
@@ -196,7 +196,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 -- ============================================
 
 -- Year 3: More Subtraction (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 3', 'Subtraction', 'What is 100 - 45?', '55', NULL, 2, 'Count back', '100 minus 45 equals 55'),
 ('Year 3', 'Subtraction', 'What is 200 - 125?', '75', NULL, 2, 'Column method', '200 minus 125 equals 75'),
 ('Year 3', 'Subtraction', 'What is 150 - 75?', '75', NULL, 2, 'Half of 150', '150 minus 75 equals 75'),
@@ -219,7 +219,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 3', 'Subtraction', 'What is 565 - 265?', '300', NULL, 2, 'Subtract hundreds', '565 minus 265 equals 300');
 
 -- Year 3: More Fractions (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 3', 'Fractions', 'What is half of 20?', '10', ARRAY['ten'], 1, 'Divide by 2', 'Half of 20 is 10'),
 ('Year 3', 'Fractions', 'What is 1/2 of 14?', '7', ARRAY['seven'], 1, 'Divide by 2', '1/2 of 14 is 7'),
 ('Year 3', 'Fractions', 'What is 1/2 of 18?', '9', ARRAY['nine'], 1, 'Divide by 2', '1/2 of 18 is 9'),
@@ -242,7 +242,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 3', 'Fractions', 'What is 4/5 of 10?', '8', ARRAY['eight'], 3, 'Find 1/5 first', '4/5 of 10 is 8');
 
 -- Year 3: Money (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 3', 'Money', 'What is £2 + £3?', '5', ARRAY['£5', 'five'], 1, 'Add the pounds', '£2 plus £3 equals £5'),
 ('Year 3', 'Money', 'What is £5 - £2?', '3', ARRAY['£3', 'three'], 1, 'Subtract', '£5 minus £2 equals £3'),
 ('Year 3', 'Money', 'What is £1.50 + £2.50?', '4', ARRAY['£4', 'four'], 2, 'Make £4', '£1.50 plus £2.50 equals £4'),
@@ -265,7 +265,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 3', 'Money', 'What is £4.40 + £3.60?', '8', ARRAY['£8', 'eight'], 2, 'Make £8', '£4.40 plus £3.60 equals £8');
 
 -- Year 3: Time (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 3', 'Time', 'How many minutes in 1 hour?', '60', ARRAY['sixty'], 1, '60 minutes', 'There are 60 minutes in 1 hour'),
 ('Year 3', 'Time', 'How many seconds in 1 minute?', '60', ARRAY['sixty'], 1, '60 seconds', 'There are 60 seconds in 1 minute'),
 ('Year 3', 'Time', 'How many hours in 1 day?', '24', NULL, 1, '24 hours', 'There are 24 hours in 1 day'),
@@ -297,7 +297,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 -- ============================================
 
 -- Year 4: More Addition (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 4', 'Addition', 'What is 1234 + 2345?', '3579', NULL, 3, 'Column addition', '1234 plus 2345 equals 3579'),
 ('Year 4', 'Addition', 'What is 2567 + 1234?', '3801', NULL, 3, 'Add carefully', '2567 plus 1234 equals 3801'),
 ('Year 4', 'Addition', 'What is 3456 + 2345?', '5801', NULL, 3, 'Column method', '3456 plus 2345 equals 5801'),
@@ -320,7 +320,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 4', 'Addition', 'What is 6666 + 1111?', '7777', NULL, 3, 'Pattern', '6666 plus 1111 equals 7777');
 
 -- Year 4: More Subtraction (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 4', 'Subtraction', 'What is 5000 - 2000?', '3000', NULL, 2, 'Subtract thousands', '5000 minus 2000 equals 3000'),
 ('Year 4', 'Subtraction', 'What is 6000 - 2500?', '3500', NULL, 2, 'Subtract', '6000 minus 2500 equals 3500'),
 ('Year 4', 'Subtraction', 'What is 7000 - 3250?', '3750', NULL, 3, 'Column method', '7000 minus 3250 equals 3750'),
@@ -343,7 +343,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 4', 'Subtraction', 'What is 6543 - 2109?', '4434', NULL, 3, 'Column subtraction', '6543 minus 2109 equals 4434');
 
 -- Year 4: Decimals (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 4', 'Decimals', 'What is 1.5 + 2.5?', '4', ARRAY['4.0'], 2, 'Add', '1.5 plus 2.5 equals 4'),
 ('Year 4', 'Decimals', 'What is 3.2 + 1.8?', '5', ARRAY['5.0'], 2, 'Make 5', '3.2 plus 1.8 equals 5'),
 ('Year 4', 'Decimals', 'What is 4.7 + 2.3?', '7', ARRAY['7.0'], 2, 'Make 7', '4.7 plus 2.3 equals 7'),
@@ -366,7 +366,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 4', 'Decimals', 'What is 3.3 × 2?', '6.6', NULL, 2, 'Double', '3.3 times 2 equals 6.6');
 
 -- Year 4: Area and Perimeter (15 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 4', 'Area', 'What is the area of a rectangle 5cm by 4cm?', '20', NULL, 2, 'Length × width', 'Area = 5 × 4 = 20 square cm'),
 ('Year 4', 'Area', 'What is the area of a rectangle 6cm by 3cm?', '18', NULL, 2, 'Length × width', 'Area = 6 × 3 = 18 square cm'),
 ('Year 4', 'Area', 'What is the area of a rectangle 7cm by 2cm?', '14', NULL, 2, 'Length × width', 'Area = 7 × 2 = 14 square cm'),
@@ -384,7 +384,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 4', 'Perimeter', 'What is the perimeter of a rectangle 9cm by 1cm?', '20', ARRAY['twenty'], 2, 'Add all sides', 'Perimeter = 9+1+9+1 = 20cm');
 
 -- Year 4: Word Problems (15 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 4', 'Word Problems', 'If a book costs £3 and you buy 4, how much in total?', '12', ARRAY['£12'], 2, 'Multiply', '£3 × 4 = £12'),
 ('Year 4', 'Word Problems', 'If you have £20 and spend £12, how much is left?', '8', ARRAY['£8'], 2, 'Subtract', '£20 - £12 = £8'),
 ('Year 4', 'Word Problems', 'A bus has 45 seats. If 28 are taken, how many are empty?', '17', NULL, 2, 'Subtract', '45 - 28 = 17 seats'),
@@ -406,7 +406,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 -- ============================================
 
 -- Year 5: More Division (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 5', 'Division', 'What is 144 ÷ 12?', '12', NULL, 2, '12 times 12', '144 divided by 12 equals 12'),
 ('Year 5', 'Division', 'What is 180 ÷ 12?', '15', NULL, 3, 'Use your tables', '180 divided by 12 equals 15'),
 ('Year 5', 'Division', 'What is 156 ÷ 12?', '13', NULL, 3, 'Use multiplication', '156 divided by 12 equals 13'),
@@ -429,7 +429,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 5', 'Division', 'What is 420 ÷ 21?', '20', ARRAY['twenty'], 3, 'Use your tables', '420 divided by 21 equals 20');
 
 -- Year 5: Percentages (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 5', 'Percentages', 'What is 10% of 50?', '5', ARRAY['five'], 2, 'Divide by 10', '10% of 50 equals 5'),
 ('Year 5', 'Percentages', 'What is 10% of 70?', '7', ARRAY['seven'], 2, 'Divide by 10', '10% of 70 equals 7'),
 ('Year 5', 'Percentages', 'What is 10% of 130?', '13', NULL, 2, 'Divide by 10', '10% of 130 equals 13'),
@@ -452,7 +452,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 5', 'Percentages', 'What is 5% of 40?', '2', ARRAY['two'], 3, 'Half of 10%', '5% of 40 equals 2');
 
 -- Year 5: More Word Problems (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 5', 'Word Problems', 'A cinema ticket costs £8.50. How much for 4 tickets?', '34', ARRAY['£34'], 3, 'Multiply', '£8.50 × 4 = £34'),
 ('Year 5', 'Word Problems', 'If 3/5 of 30 pupils like football, how many is this?', '18', NULL, 3, 'Find 1/5 first', '3/5 of 30 = 18 pupils'),
 ('Year 5', 'Word Problems', 'A baker makes 144 cakes and puts 12 in each box. How many boxes?', '12', NULL, 3, 'Divide', '144 ÷ 12 = 12 boxes'),
@@ -475,7 +475,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 5', 'Word Problems', 'If 5/8 of 64 marbles are red, how many are red?', '40', ARRAY['forty'], 3, 'Find 5/8 of 64', '5/8 of 64 = 40 marbles');
 
 -- Year 5: Algebra Basics (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 5', 'Algebra', 'If x + 5 = 12, what is x?', '7', ARRAY['seven'], 2, 'Subtract 5 from 12', 'x = 12 - 5 = 7'),
 ('Year 5', 'Algebra', 'If x + 8 = 15, what is x?', '7', ARRAY['seven'], 2, 'Subtract 8 from 15', 'x = 15 - 8 = 7'),
 ('Year 5', 'Algebra', 'If x + 12 = 20, what is x?', '8', ARRAY['eight'], 2, 'Subtract 12 from 20', 'x = 20 - 12 = 8'),
@@ -507,7 +507,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 -- ============================================
 
 -- Year 6: More Algebra (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 6', 'Algebra', 'If 3x + 7 = 25, what is x?', '6', ARRAY['six'], 3, 'Subtract 7, divide by 3', '3x = 18, so x = 6'),
 ('Year 6', 'Algebra', 'If 4x - 12 = 20, what is x?', '8', ARRAY['eight'], 3, 'Add 12, divide by 4', '4x = 32, so x = 8'),
 ('Year 6', 'Algebra', 'If 5x + 8 = 38, what is x?', '6', ARRAY['six'], 3, 'Subtract 8, divide by 5', '5x = 30, so x = 6'),
@@ -530,7 +530,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 6', 'Algebra', 'If 15x = 90, what is x?', '6', ARRAY['six'], 3, 'Divide by 15', 'x = 90 ÷ 15 = 6');
 
 -- Year 6: More Word Problems (25 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 6', 'Word Problems', 'A £60 jacket is reduced by 20%. What is the new price?', '48', ARRAY['£48'], 3, 'Find 20% and subtract', '20% of £60 = £12, so £60 - £12 = £48'),
 ('Year 6', 'Word Problems', 'If 3/8 of 96 students play an instrument, how many is this?', '36', NULL, 3, 'Find 1/8 first', '3/8 of 96 = 36 students'),
 ('Year 6', 'Word Problems', 'A rectangle has perimeter 36cm. If width is 7cm, what is length?', '11', NULL, 3, 'Use perimeter formula', '(36 - 14) ÷ 2 = 11cm'),
@@ -558,7 +558,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 6', 'Word Problems', 'A cube has volume 125 cubic cm. What is the length of each edge?', '5', ARRAY['five'], 3, 'Cube root of 125', '∛125 = 5cm');
 
 -- Year 6: Statistics and Data (20 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 6', 'Statistics', 'What is the mean of 5, 7, 9, 11, 13?', '9', ARRAY['nine'], 2, 'Add and divide by 5', '(5+7+9+11+13) ÷ 5 = 9'),
 ('Year 6', 'Statistics', 'What is the mean of 10, 15, 20, 25?', '17.5', NULL, 3, 'Add and divide by 4', '(10+15+20+25) ÷ 4 = 17.5'),
 ('Year 6', 'Statistics', 'What is the mean of 8, 12, 16?', '12', NULL, 2, 'Add and divide by 3', '(8+12+16) ÷ 3 = 12'),
@@ -581,7 +581,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 6', 'Statistics', 'What is the mean of 15, 18, 21, 24, 27?', '21', NULL, 2, 'Add and divide by 5', '(15+18+21+24+27) ÷ 5 = 21');
 
 -- Year 6: Geometry (15 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 6', 'Geometry', 'How many degrees in a full turn?', '360', NULL, 2, 'Full circle', 'A full turn is 360 degrees'),
 ('Year 6', 'Geometry', 'How many degrees in a right angle?', '90', ARRAY['ninety'], 1, 'Quarter turn', 'A right angle is 90 degrees'),
 ('Year 6', 'Geometry', 'How many degrees in a straight line?', '180', NULL, 2, 'Half turn', 'A straight line is 180 degrees'),
@@ -599,7 +599,7 @@ INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answ
 ('Year 6', 'Geometry', 'What is half of 360 degrees?', '180', NULL, 2, 'Half turn', 'Half of 360° is 180°');
 
 -- Year 6: More Advanced Fractions (10 questions)
-INSERT INTO gem_hunt_questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
+INSERT INTO questions (year_group, subject, question_text, correct_answer, alternative_answers, difficulty_level, hint, explanation) VALUES
 ('Year 6', 'Fractions', 'What is 5/8 + 1/8?', '3/4', ARRAY['6/8'], 2, 'Simplify', '6/8 simplifies to 3/4'),
 ('Year 6', 'Fractions', 'What is 7/10 - 1/10?', '3/5', ARRAY['6/10'], 2, 'Simplify', '6/10 simplifies to 3/5'),
 ('Year 6', 'Fractions', 'What is 1/4 × 8?', '2', ARRAY['two'], 2, 'Quarter of 8', '1/4 of 8 = 2'),

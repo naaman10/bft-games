@@ -6,20 +6,34 @@ Individual games platform for Brighter Futures Learn (bft-learn). This project h
 
 Each game is a self-contained React component that can be iframed into the bft-learn application. Games are designed to be educational, engaging, and appropriate for various age groups.
 
-## 🎮 Gem Hunt - First Major Game
+## 🎮 Games
 
+### 1. Gem Hunt - Platformer Math Adventure
 **Gem Hunt** is an educational math game combining question-answer mechanics with Mario-style platformer gameplay. Students answer math questions to earn moves, which they use to navigate platform levels collecting gems.
 
-### Quick Start for Gem Hunt
 - 📋 **Overview**: See [`docs/EXECUTIVE_SUMMARY.md`](docs/EXECUTIVE_SUMMARY.md)
 - 📖 **Full Plan**: See [`docs/GEM_HUNT_PLAN.md`](docs/GEM_HUNT_PLAN.md)
 - 🗺️ **Roadmap**: See [`docs/IMPLEMENTATION_ROADMAP.md`](docs/IMPLEMENTATION_ROADMAP.md)
-- 🗄️ **Database**: See [`database/schema.sql`](database/schema.sql)
+
+### 2. Maths Quiz Generator - Customizable Quiz System
+**Maths Quiz Generator** allows students to create custom maths quizzes with instant feedback. Students choose their year group, subject (or all subjects), and number of questions (5-20) to create personalized practice sessions.
+
+- 📋 **Overview**: See [`docs/MATHS_QUIZ_GENERATOR.md`](docs/MATHS_QUIZ_GENERATOR.md)
+- 📖 **API**: See [`docs/QUIZ_GENERATOR_API.md`](docs/QUIZ_GENERATOR_API.md)
+
+**Features:**
+- Customizable quiz configuration (year group, subject, length)
+- Instant answer feedback with correct solutions
+- Comprehensive results with letter grades
+- Progress tracking and analytics (with auth)
+- Works in guest mode without authentication
+- Shares the same 755+ question bank with Gem Hunt
 
 ### Documentation Index
 
-Complete Gem Hunt planning documentation:
+Complete game planning documentation:
 
+**Gem Hunt:**
 | Document | Description |
 |----------|-------------|
 | [`EXECUTIVE_SUMMARY.md`](docs/EXECUTIVE_SUMMARY.md) | High-level overview for stakeholders |
@@ -27,9 +41,19 @@ Complete Gem Hunt planning documentation:
 | [`IMPLEMENTATION_ROADMAP.md`](docs/IMPLEMENTATION_ROADMAP.md) | 8-week development timeline with phases |
 | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture & data flow diagrams |
 | [`API_SPECIFICATION.md`](docs/API_SPECIFICATION.md) | REST API endpoints & PostMessage events |
+| [`GEM_HUNT_README.md`](docs/GEM_HUNT_README.md) | Game usage & integration guide |
+
+**Maths Quiz Generator:**
+| Document | Description |
+|----------|-------------|
+| [`MATHS_QUIZ_GENERATOR.md`](docs/MATHS_QUIZ_GENERATOR.md) | Complete game documentation & features |
+| [`QUIZ_GENERATOR_API.md`](docs/QUIZ_GENERATOR_API.md) | API endpoints & integration guide |
+
+**Shared Resources:**
+| Document | Description |
+|----------|-------------|
 | [`QUESTION_BANK_SAMPLES.md`](docs/QUESTION_BANK_SAMPLES.md) | Sample questions for Years 1-6 |
 | [`QUESTION_BANK_EXPANSION.md`](docs/QUESTION_BANK_EXPANSION.md) | 755+ questions across all subjects & year groups |
-| [`GEM_HUNT_README.md`](docs/GEM_HUNT_README.md) | Game usage & integration guide |
 | [`schema.sql`](database/schema.sql) | PostgreSQL database schema |
 
 ## Project Structure
