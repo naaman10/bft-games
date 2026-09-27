@@ -28,6 +28,7 @@ Complete Gem Hunt planning documentation:
 | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture & data flow diagrams |
 | [`API_SPECIFICATION.md`](docs/API_SPECIFICATION.md) | REST API endpoints & PostMessage events |
 | [`QUESTION_BANK_SAMPLES.md`](docs/QUESTION_BANK_SAMPLES.md) | Sample questions for Years 1-6 |
+| [`QUESTION_BANK_EXPANSION.md`](docs/QUESTION_BANK_EXPANSION.md) | 755+ questions across all subjects & year groups |
 | [`GEM_HUNT_README.md`](docs/GEM_HUNT_README.md) | Game usage & integration guide |
 | [`schema.sql`](database/schema.sql) | PostgreSQL database schema |
 
