@@ -1,6 +1,6 @@
 .quiz-playing {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bft-background, #f6f4ef);
   padding: 2rem;
   display: flex;
   align-items: center;
@@ -8,18 +8,19 @@
 }
 
 .quiz-playing-container {
-  background: white;
-  border-radius: 20px;
+  background: var(--bft-card, white);
+  border-radius: 24px;
   padding: 2rem;
   max-width: 800px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--bft-shadow-card, 0 10px 30px rgba(28, 25, 23, 0.06));
+  border: 1px solid var(--bft-border, #e7e5e4);
 }
 
 .quiz-progress-bar {
   width: 100%;
   height: 10px;
-  background: #f0f0f0;
+  background: var(--bft-border, #e7e5e4);
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 1.5rem;
@@ -27,23 +28,24 @@
 
 .quiz-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--bft-accent, #f75074);
   transition: width 0.3s ease;
 }
 
 .quiz-counter {
   text-align: center;
   font-size: 1.1rem;
-  color: #666;
+  color: var(--bft-muted, #57534e);
   margin-bottom: 2rem;
   font-weight: 600;
 }
 
 .question-card {
-  background: #f9f9f9;
-  border-radius: 15px;
+  background: var(--bft-peach, #fff1d6);
+  border-radius: 20px;
   padding: 2rem;
   margin-bottom: 2rem;
+  border: 2px solid var(--bft-border, #e7e5e4);
 }
 
 .question-meta {
@@ -54,7 +56,7 @@
 }
 
 .question-subject {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--bft-accent, #f75074);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -68,9 +70,10 @@
 
 .question-text {
   font-size: 1.8rem;
-  color: #333;
+  color: var(--bft-foreground, #1c1917);
   margin-bottom: 2rem;
   line-height: 1.4;
+  font-weight: 600;
 }
 
 .answer-section {
@@ -81,39 +84,42 @@
 
 .answer-input {
   padding: 1rem 1.5rem;
-  border: 3px solid #e0e0e0;
-  border-radius: 10px;
+  border: 3px solid var(--bft-border, #e7e5e4);
+  border-radius: 12px;
   font-size: 1.2rem;
   transition: all 0.3s ease;
+  background: var(--bft-card, white);
+  color: var(--bft-foreground, #1c1917);
 }
 
 .answer-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--bft-accent, #f75074);
+  box-shadow: 0 0 0 4px var(--bft-accent-soft, #fde8ee);
 }
 
 .answer-input:disabled {
-  background: #f5f5f5;
+  background: var(--bft-border, #e7e5e4);
   cursor: not-allowed;
 }
 
 .btn-submit-answer {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bft-accent, #f75074);
   color: white;
   border: none;
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(247, 80, 116, 0.25);
 }
 
 .btn-submit-answer:hover:not(:disabled) {
+  background: var(--bft-accent-hover, #e03d61);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 6px 16px rgba(247, 80, 116, 0.35);
 }
 
 .btn-submit-answer:disabled {
@@ -125,7 +131,7 @@
 .feedback {
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 600;
   text-align: center;
@@ -133,14 +139,14 @@
 }
 
 .feedback.correct {
-  background: #d4edda;
+  background: var(--bft-mint, #e4f6ee);
   color: #155724;
   border: 2px solid #c3e6cb;
 }
 
 .feedback.incorrect {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--bft-error-bg, #fef2f2);
+  color: var(--bft-error, #b91c1c);
   border: 2px solid #f5c6cb;
 }
 
@@ -170,12 +176,12 @@
 }
 
 .status-dot.pending {
-  background: #e0e0e0;
+  background: var(--bft-border, #e7e5e4);
 }
 
 .status-dot.current {
-  background: #667eea;
-  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  background: var(--bft-accent, #f75074);
+  box-shadow: 0 0 10px var(--bft-ring, #fbb6c5);
   animation: pulse 1.5s infinite;
 }
 
@@ -184,7 +190,7 @@
 }
 
 .status-dot.incorrect {
-  background: #dc3545;
+  background: var(--bft-error, #b91c1c);
 }
 
 @keyframes pulse {
