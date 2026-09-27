@@ -5,6 +5,8 @@ import { QuizPlaying } from './components/QuizPlaying';
 import { QuizResults } from './components/QuizResults';
 import { QuizConfig, QuizQuestion, QuizAnswer, QuizState } from './types/quiz';
 import * as quizApi from './services/api';
+import { useQuizAuth } from './hooks/useQuizAuth';
+import { notifyQuizComplete } from './services/postMessage';
 import './MathsQuiz.css';
 
 const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
@@ -17,8 +19,8 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get token from postMessage or URL params (if integrated with BFT)
-  const token: string | null = null; // TODO: Get from parent app via postMessage
+  // Get authentication from parent frame or URL params
+  const { token, apiBaseUrl, username, yearGroup: authYearGroup, subject: authSubject, isAuthenticated, ready } = useQuizAuth();
 
   const handleStartQuiz = async (quizConfig: QuizConfig) => {
     setLoading(true);
@@ -65,6 +67,42 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
     if (onComplete) {
       onComplete();
     }
+
+    // Send QUIZ_COMPLETE postMessage to parent frame
+    console.log('[MathsQuiz] Quiz completed, preparing to send results');
+    const results = {
+      score: scorePercentage,
+      totalQuestions: quizAnswers.length,
+      correctAnswers: correctCount,
+      timeElapsed: totalTime,
+      yearGroup: config?.yearGroup || authYearGroup || 'Year 6',
+      subject: config?.subject || authSubject || null,
+      difficulty: 'medium',
+      answers: quizAnswers.map(a => ({
+        questionId: a.questionId,
+        userAnswer: a.userAnswer,
+        correct: a.isCorrect,
+        timeSpent: a.timeTakenSeconds,
+      })),
+    };
+
+    notifyQuizComplete(results);
+
+    // Optionally, also save directly to API if authenticated
+    if (isAuthenticated && token && apiBaseUrl) {
+      console.log('[MathsQuiz] Saving results to API:', apiBaseUrl);
+      fetch(`${apiBaseUrl}/quiz-generator/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(results),
+      })
+        .then(res => res.json())
+        .then(data => console.log('[MathsQuiz] Saved to API:', data))
+        .catch(err => console.error('[MathsQuiz] Failed to save to API:', err));
+    }
   };
 
   const handlePlayAgain = () => {
@@ -75,6 +113,18 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setError(null);
     setState('setup');
   };
+
+  // Wait for authentication to be ready
+  if (!ready) {
+    return (
+      <div className="maths-quiz">
+        <div className="quiz-loading">
+          <div className="loading-spinner" />
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -104,7 +154,7 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
   return (
     <div className="maths-quiz">
       {state === 'setup' && (
-        <QuizSetup onStart={handleStartQuiz} token={token} />
+        <QuizSetup onStart={handleStartQuiz} token={token} isAuthenticated={isAuthenticated} username={username} />
       )}
 
       {state === 'playing' && questions.length > 0 && (
@@ -123,6 +173,8 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
           startTime={startTime}
           onPlayAgain={handlePlayAgain}
           token={token}
+          isAuthenticated={isAuthenticated}
+          username={username}
         />
       )}
     </div>

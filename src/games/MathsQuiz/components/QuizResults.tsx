@@ -10,6 +10,8 @@ type QuizResultsProps = {
   startTime: Date;
   onPlayAgain: () => void;
   token?: string | null;
+  isAuthenticated?: boolean;
+  username?: string | null;
 };
 
 export const QuizResults: React.FC<QuizResultsProps> = ({
@@ -19,6 +21,8 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   startTime,
   onPlayAgain,
   token,
+  isAuthenticated = false,
+  username = null,
 }) => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -145,7 +149,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
           </div>
         </div>
 
-        {token && (
+        {isAuthenticated && token && (
           <div className="save-status">
             {saving && <p className="saving">Saving results...</p>}
             {saved && <p className="saved">✓ Results saved to your account!</p>}
@@ -153,7 +157,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
           </div>
         )}
 
-        {!token && (
+        {!isAuthenticated && (
           <div className="guest-notice">
             <p>💡 Sign in to save your results and track your progress over time!</p>
           </div>

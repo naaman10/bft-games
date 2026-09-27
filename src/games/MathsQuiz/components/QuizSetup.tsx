@@ -6,9 +6,11 @@ import './QuizSetup.css';
 type QuizSetupProps = {
   onStart: (config: QuizConfig) => void;
   token?: string | null;
+  isAuthenticated?: boolean;
+  username?: string | null;
 };
 
-export const QuizSetup: React.FC<QuizSetupProps> = ({ onStart, token }) => {
+export const QuizSetup: React.FC<QuizSetupProps> = ({ onStart, token, isAuthenticated = false, username = null }) => {
   const [yearGroups, setYearGroups] = useState<string[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,6 +85,12 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({ onStart, token }) => {
         <p className="quiz-setup-subtitle">
           Create your custom maths quiz! Select your year group, choose a subject, and decide how many questions you want.
         </p>
+
+        {isAuthenticated && username && (
+          <div className="auth-status">
+            <p>👤 Welcome, {username}!</p>
+          </div>
+        )}
 
         <div className="quiz-setup-form">
           {/* Year Group Selection */}
