@@ -174,7 +174,6 @@ const MathsQuiz: React.FC<GameProps> = ({ onComplete, onScore }) => {
           onPlayAgain={handlePlayAgain}
           token={token}
           isAuthenticated={isAuthenticated}
-          username={username}
         />
       )}
     </div>

@@ -11,7 +11,6 @@ type QuizResultsProps = {
   onPlayAgain: () => void;
   token?: string | null;
   isAuthenticated?: boolean;
-  username?: string | null;
 };
 
 export const QuizResults: React.FC<QuizResultsProps> = ({
@@ -22,7 +21,6 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   onPlayAgain,
   token,
   isAuthenticated = false,
-  username = null,
 }) => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
