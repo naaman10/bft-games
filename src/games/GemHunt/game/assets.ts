@@ -3,6 +3,7 @@ export const ASSETS = {
   background: {
     back: '/assets/environment/Background/back.png',
     middle: '/assets/environment/Background/middle.png',
+    volcanic: '/assets/environment/volcanic-landscape.webp',
   },
   props: {
     platformLong: '/assets/environment/Props/platform-long.png',

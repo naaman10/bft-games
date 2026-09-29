@@ -20,6 +20,9 @@ export class LevelScene extends Phaser.Scene {
   private enemies!: Phaser.Physics.Arcade.Group;
   private hazards!: Phaser.Physics.Arcade.StaticGroup;
   private goal!: Phaser.Physics.Arcade.Sprite;
+  private finishLabel!: Phaser.GameObjects.Text;
+  private duneFar?: Phaser.GameObjects.TileSprite;
+  private duneNear?: Phaser.GameObjects.TileSprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private jumpKey!: Phaser.Input.Keyboard.Key;
   private movesRemaining = 25;
@@ -32,7 +35,7 @@ export class LevelScene extends Phaser.Scene {
   private unlimited = false;
   private invulnerableUntil = 0;
   private checkpoint = { x: 80, y: 520 };
-  private bg!: Phaser.GameObjects.TileSprite;
+  private bg!: Phaser.GameObjects.TileSprite | Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'LevelScene' });
@@ -40,6 +43,7 @@ export class LevelScene extends Phaser.Scene {
 
   preload() {
     this.load.image('bg-back', ASSETS.background.back);
+    this.load.image('bg-volcanic', ASSETS.background.volcanic);
     this.load.image('bft-sun', ASSETS.ui.sun);
     this.load.image('platform-long', ASSETS.props.platformLong);
     this.load.image('crate', ASSETS.props.crate);
@@ -173,7 +177,12 @@ export class LevelScene extends Phaser.Scene {
   update(_time: number, _delta: number) {
     if (this.levelComplete) return;
 
-    this.bg.tilePositionX = this.cameras.main.scrollX * 0.3;
+    const scrollX = this.cameras.main.scrollX;
+    if (this.bg instanceof Phaser.GameObjects.TileSprite) {
+      this.bg.tilePositionX = scrollX * 0.3;
+    }
+    if (this.duneFar) this.duneFar.tilePositionX = scrollX * 0.08;
+    if (this.duneNear) this.duneNear.tilePositionX = scrollX * 0.16;
 
     this.updateEnemies();
 
@@ -238,14 +247,96 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private createBackground() {
-    this.bg = this.add
+    if (this.level.theme.id === 'volcanic') {
+      this.bg = this.createVolcanicBackground();
+      return;
+    }
+
+    const sky = this.add
       .tileSprite(0, 0, 800, 600, 'bg-back')
       .setOrigin(0, 0)
       .setScrollFactor(0)
       .setDepth(-2)
       .setTint(this.level.theme.bgTint);
+    sky.setTileScale(800 / 384, 600 / 240);
+    this.bg = sky;
 
-    this.bg.setTileScale(800 / 384, 600 / 240);
+    if (this.level.theme.id === 'desert') {
+      this.createDuneBackdrop();
+    }
+  }
+
+  /** Fixed landscape. It does not scroll with the camera. */
+  private createVolcanicBackground() {
+    const cropX = 14;
+    const cropY = 45;
+    const cropW = 692;
+    const cropH = 390;
+    const key = 'bg-volcanic-scene';
+
+    if (!this.textures.exists(key)) {
+      const source = this.textures.get('bg-volcanic').getSourceImage() as CanvasImageSource;
+      const canvas = this.textures.createCanvas(key, cropW, cropH);
+      canvas?.context.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      canvas?.refresh();
+    }
+
+    const viewW = 800;
+    const viewH = 600;
+    const scale = Math.max(viewW / cropW, viewH / cropH);
+
+    return this.add
+      .image(viewW / 2, viewH / 2, key)
+      .setScrollFactor(0)
+      .setDepth(-2)
+      .setScale(scale);
+  }
+
+  /** Visual top of a ground platform tile. */
+  private groundSurfaceY() {
+    const displayHeight = 16 * GAME_CONSTANTS.PLATFORM_SCALE;
+    return this.level.groundY - displayHeight / 2;
+  }
+
+  private createDuneBackdrop() {
+    const paintDunes = (key: string, color: number, baseline: number, amplitude: number) => {
+      if (this.textures.exists(key)) return;
+      const w = 256;
+      const h = 72;
+      const g = this.make.graphics({ x: 0, y: 0 }, false);
+      g.fillStyle(color, 1);
+      g.beginPath();
+      g.moveTo(0, h);
+      for (let x = 0; x <= w; x += 8) {
+        const wave =
+          Math.sin((x / w) * Math.PI * 2) * amplitude +
+          Math.sin((x / w) * Math.PI * 4 + 1) * amplitude * 0.45;
+        g.lineTo(x, baseline - wave);
+      }
+      g.lineTo(w, h);
+      g.closePath();
+      g.fillPath();
+      g.generateTexture(key, w, h);
+      g.destroy();
+      this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    };
+
+    paintDunes('bg-dunes-far', 0xc9843a, 28, 14);
+    paintDunes('bg-dunes-near', 0xf6d48a, 34, 16);
+
+    this.duneFar = this.add
+      .tileSprite(0, 145, 800, 150, 'bg-dunes-far')
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
+      .setDepth(-1.7)
+      .setTileScale(2, 150 / 72);
+
+    this.duneNear = this.add
+      .tileSprite(0, 200, 800, 160, 'bg-dunes-near')
+      .setOrigin(0, 0)
+      .setScrollFactor(0)
+      .setDepth(-1.6)
+      .setTileScale(2, 160 / 72);
   }
 
   private createAnimations() {
@@ -374,18 +465,18 @@ export class LevelScene extends Phaser.Scene {
 
   private createDecor() {
     const key = this.level.theme.decor;
-    const groundTop = this.level.groundY - 24;
+    // Tuck the trunk a few pixels into the tile so the sprite sits on it.
+    const plantY = this.groundSurfaceY() + 4;
     const spacing = 280;
     for (let x = 120; x < this.level.width - 200; x += spacing) {
       if (!this.isOverGround(x)) continue;
-      // Skip near castle
       if (Math.abs(x - this.level.end.x) < 120) continue;
       const scale = key === 'palm' ? 1.1 : key === 'pine' ? 1.3 : 1.5;
       this.add
-        .image(x, groundTop, key)
+        .image(x, plantY, key)
         .setOrigin(0.5, 1)
         .setScale(scale)
-        .setDepth(0)
+        .setDepth(-1)
         .setTint(this.level.theme.platformTint);
     }
   }
@@ -468,6 +559,7 @@ export class LevelScene extends Phaser.Scene {
     const { x, y } = this.level.spawn;
     this.player = this.physics.add.sprite(x, y, 'foxy-idle');
     this.player.setScale(PLAYER_CONFIG.SCALE);
+    this.player.setDepth(6);
     this.player.setCollideWorldBounds(true);
     this.player.anims.play('foxy-idle');
 
@@ -499,7 +591,8 @@ export class LevelScene extends Phaser.Scene {
 
   private createGoal() {
     const castleKey = this.level.theme.castle;
-    this.goal = this.physics.add.sprite(this.level.end.x, this.level.end.y, castleKey);
+    const surfaceY = this.groundSurfaceY() + 2;
+    this.goal = this.physics.add.sprite(this.level.end.x, surfaceY, castleKey);
     this.goal.setOrigin(0.5, 1).setScale(1.4).setDepth(2);
     const body = this.goal.body as Phaser.Physics.Arcade.Body;
     body.allowGravity = false;
@@ -507,8 +600,8 @@ export class LevelScene extends Phaser.Scene {
     body.setSize(this.goal.width * 0.45, this.goal.height * 0.35);
     body.setOffset(this.goal.width * 0.28, this.goal.height * 0.55);
 
-    this.add
-      .text(this.level.end.x, this.level.end.y - this.goal.displayHeight - 12, 'FINISH', {
+    this.finishLabel = this.add
+      .text(this.level.end.x, surfaceY - this.goal.displayHeight - 12, 'FINISH', {
         fontSize: '14px',
         color: '#ffffff',
         backgroundColor: '#000000',
@@ -516,6 +609,63 @@ export class LevelScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(3);
+  }
+
+  private celebrateHouse() {
+    const house = this.goal;
+    const body = house.body as Phaser.Physics.Arcade.Body;
+    body.enable = false;
+
+    const restY = house.y;
+    const labelRest = this.finishLabel.y;
+    const scaleX = house.scaleX;
+    const scaleY = house.scaleY;
+
+    this.tweens.add({
+      targets: house,
+      y: restY - 16,
+      duration: 220,
+      yoyo: true,
+      repeat: 3,
+      ease: 'Sine.easeOut',
+    });
+    this.tweens.add({
+      targets: this.finishLabel,
+      y: labelRest - 16,
+      duration: 220,
+      yoyo: true,
+      repeat: 3,
+      ease: 'Sine.easeOut',
+    });
+    this.tweens.add({
+      targets: house,
+      scaleX: scaleX * 1.08,
+      scaleY: scaleY * 0.9,
+      duration: 220,
+      yoyo: true,
+      repeat: 3,
+      ease: 'Sine.easeInOut',
+    });
+
+    const roofY = restY - house.displayHeight * 0.72;
+    for (let i = 0; i < 7; i += 1) {
+      const spark = this.add
+        .image(house.x, roofY, 'bft-sun')
+        .setScale(0.035)
+        .setDepth(5);
+      const angle = -Math.PI / 2 + (i - 3) * 0.35;
+      this.tweens.add({
+        targets: spark,
+        x: house.x + Math.cos(angle) * 56,
+        y: roofY + Math.sin(angle) * 48,
+        alpha: 0,
+        scale: 0.015,
+        duration: 700,
+        delay: 60,
+        ease: 'Quad.easeOut',
+        onComplete: () => spark.destroy(),
+      });
+    }
   }
 
   private addSunShimmer(
@@ -639,6 +789,7 @@ export class LevelScene extends Phaser.Scene {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0, 0);
     this.player.anims.play('foxy-idle', true);
+    this.celebrateHouse();
 
     const banner = this.add
       .text(400, 260, `${this.level.theme.name}\nComplete!`, {

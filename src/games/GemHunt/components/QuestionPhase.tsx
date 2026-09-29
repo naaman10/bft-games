@@ -1,4 +1,4 @@
-import { useEffect, useState, FormEvent } from 'react';
+import { useEffect, useRef, useState, FormEvent } from 'react';
 import { Question } from '../types/game';
 import { fetchQuestions, validateAnswer } from '../services/api';
 import { GAME_CONSTANTS } from '../game/config';
@@ -36,6 +36,7 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [movesEarned, setMovesEarned] = useState(0);
+  const answerInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +81,17 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
   }, [yearGroup, subject, token, sessionId]);
 
   const current = questions[index];
+
+  useEffect(() => {
+    if (loading || error || feedback || submitting || !current) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      answerInputRef.current?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [index, loading, error, feedback, submitting, current]);
+
   const progressPct = questions.length
     ? ((index + (feedback ? 1 : 0)) / questions.length) * 100
     : 0;
@@ -222,6 +234,7 @@ const QuestionPhase: React.FC<QuestionPhaseProps> = ({
           Your answer
         </label>
         <input
+          ref={answerInputRef}
           id="gem-hunt-answer"
           className="question-input"
           type="text"

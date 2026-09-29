@@ -11,9 +11,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onNewGame, onContinue, hasSav
     <div className="start-screen">
       <div className="start-screen-container">
         <div className="start-screen-header">
-          <img 
-            src="/assets/Characters/Foxy/idle/spritesheet.png" 
-            alt="Foxy"
+          <img
+            src="/assets/other/foxy-wave.png"
+            alt="Foxy waving"
             className="start-screen-character"
           />
           <h1 className="start-screen-title">Gem Hunt</h1>

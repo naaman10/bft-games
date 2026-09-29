@@ -275,15 +275,6 @@ const GemHunt: React.FC<GameProps> = ({ onComplete, onScore }) => {
     setPhase('questions');
   };
 
-  // Show subject selector if needed
-  if (session.needsSelection) {
-    return (
-      <div className="gem-hunt">
-        <SubjectSelector onSelect={session.startWithSelection} />
-      </div>
-    );
-  }
-
   if (!session.ready || (phase === 'boot' && session.mode !== 'error')) {
     return (
       <div className="gem-hunt">
