@@ -2,6 +2,7 @@ import { GameConfig } from '../types/game';
 import ExampleGame from './ExampleGame/ExampleGame';
 import GemHunt from './GemHunt/GemHunt';
 import MathsQuiz from './MathsQuiz/MathsQuiz';
+import ReadingDetective from './ReadingDetective/ReadingDetective';
 
 export const GAMES: GameConfig[] = [
   {
@@ -11,6 +12,16 @@ export const GAMES: GameConfig[] = [
     component: GemHunt,
     category: 'Educational Math',
     minAge: 5,
+    maxAge: 11,
+  },
+  {
+    id: 'reading-detective',
+    title: 'Reading Detective',
+    description:
+      'Search painted scenes for written clues, answer comprehension questions, and decide where the investigation goes next.',
+    component: ReadingDetective,
+    category: 'English Reading',
+    minAge: 7,
     maxAge: 11,
   },
   {
